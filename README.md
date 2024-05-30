@@ -2,17 +2,31 @@
 
 The original documentation containing the full challenge description is [here](README_CHALLENGE.md).
 
-## 🚀 System Architecture (High Level)
+## 🚀 System Architecture in a high level
 
 ![MRS Architecture](architecture.png)
 
-### 👤 User Service
+## 📚 Documentations
 
-### ⭐ Rating Service
+Each system component (service or client) is documented in its respective repository:
 
-### 🎥 Movie Service
+- ### 👤 User Service [repository](services/user)
+- ### ⭐ Rating Service [repository](services/rating)
+- ### 🎥 Movie Service [repository](services/movie)
+- ### 💻 Client [repository](client)
 
-### 💻 Client
+## 🏃 How to run
+
+In order to run the system locally, there are two simple alternatives. Note that both options require [Docker](https://www.docker.com/):
+
+**1. From this directory, run:**
+```bash
+make compose
+```
+This will spin up all the containerized components.
+
+**2. See the [docs](#-documentations):**
+
 
 ## ✅ Requirements
 
