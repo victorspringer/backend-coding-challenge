@@ -1,5 +1,5 @@
 [user_service]
-environment = "development"
+environment = "docker-compose"
 log_level = "debug"
     [user_service.server]
     port = ":8081"
@@ -8,7 +8,7 @@ log_level = "debug"
     idle_timeout = 5
 
 [mongodb]
-uri = "mongodb://localhost:27017/userdb"
+uri = "mongodb://mongo1:27017/userdb"
 db_name = "userdb"
 collection = "users"
 timeout = 4 # seconds

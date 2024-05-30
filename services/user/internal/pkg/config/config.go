@@ -34,7 +34,7 @@ func New(env string) (*Config, error) {
 	viper.SetConfigType("toml")
 	viper.AddConfigPath("./configs")
 
-	viper.SetEnvPrefix("User")
+	viper.SetEnvPrefix("UserService")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if env == "" {

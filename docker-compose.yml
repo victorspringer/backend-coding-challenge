@@ -1,0 +1,66 @@
+services:
+  user:
+    build:
+      context: ./services/user
+    ports:
+      - "8081:8081"
+    environment:
+      - ENVIRONMENT=docker-compose
+    depends_on:
+      - mongo1
+
+#  rating:
+#    build:
+#      context: ./services/rating
+#    ports:
+#      - "8082:8082"
+#    environment:
+#      - ENVIRONMENT=docker-compose
+#    depends_on:
+#      - mongo2
+#
+#  movie:
+#    build:
+#      context: ./services/movie
+#    ports:
+#      - "8083:8083"
+#    environment:
+#      - ENVIRONMENT=docker-compose
+#    depends_on:
+#      - mongo3
+#
+#  client:
+#    build:
+#      context: ./client
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - user
+#      - rating
+#      - movie
+
+  mongo1:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1data:/data/db
+
+  mongo2:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo2data:/data/db
+
+  mongo3:
+    image: mongo:latest
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo3data:/data/db
+
+volumes:
+  mongo1data:
+  mongo2data:
+  mongo3data:
