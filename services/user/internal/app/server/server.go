@@ -16,12 +16,28 @@ import (
 )
 
 // Init starts the application server.
-func Init(cfg *config.Config, logger *log.Logger) error {
-	db, err := database.New()
+func Init(ctx context.Context, cfg *config.Config, logger *log.Logger) error {
+	logger.Debug("initializing server")
+
+	db, err := database.New(
+		ctx,
+		logger,
+		cfg.MongoDB.URI,
+		cfg.MongoDB.DBName,
+		cfg.MongoDB.Collection,
+		cfg.MongoDB.Timeout*time.Second,
+	)
 	if err != nil {
-		logger.Fatal("failed to init database", log.Error(err))
+		return errors.Wrap(err, "failed to connect to database")
 	}
-	// defer db.Close()
+
+	defer func() {
+		if err := db.Close(ctx); err != nil {
+			logger.Error("error during database connection pool termination", log.Error(err))
+		}
+	}()
+
+	logger.Debug("database connected")
 
 	server := http.Server{
 		Addr:         cfg.UserService.Server.Port,
@@ -33,7 +49,7 @@ func Init(cfg *config.Config, logger *log.Logger) error {
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logger.Fatal("ListenAndServe failed", log.Error(err))
+			logger.Fatal("server failed to listen and serve", log.Error(err))
 		}
 	}()
 
@@ -47,7 +63,7 @@ func Init(cfg *config.Config, logger *log.Logger) error {
 	<-stop
 
 	// context with a timeout to enable graceful shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), server.WriteTimeout*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, server.WriteTimeout*time.Second)
 	defer cancel()
 
 	// gracefully shutdown the server

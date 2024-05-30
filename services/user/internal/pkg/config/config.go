@@ -19,6 +19,12 @@ type Config struct {
 			IdleTimeout  time.Duration `mapstructure:"idle_timeout"`
 		} `mapstructure:"server"`
 	} `mapstructure:"user_service"`
+	MongoDB struct {
+		URI        string        `mapstructure:"uri"`
+		DBName     string        `mapstructure:"db_name"`
+		Collection string        `mapstructure:"collection"`
+		Timeout    time.Duration `mapstructure:"timeout"`
+	} `mapstructure:"mongodb"`
 }
 
 // New returns a new instance of Config.

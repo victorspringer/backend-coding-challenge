@@ -1,15 +1,13 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/app/server"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/config"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
 )
-
-// TODO: implement repository
-// tests
 
 func main() {
 	env := os.Getenv("ENVIRONMENT")
@@ -20,7 +18,7 @@ func main() {
 
 	logger := log.New(cfg.UserService.LogLevel)
 
-	if err := server.Init(cfg, logger); err != nil {
-		logger.Fatal("failed to initialize server", log.Error(err))
+	if err := server.Init(context.Background(), cfg, logger); err != nil {
+		logger.Fatal("server initialization failed", log.Error(err))
 	}
 }

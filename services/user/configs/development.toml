@@ -7,3 +7,8 @@ log_level = "debug"
     write_timeout = 5
     idle_timeout = 5
 
+[mongodb]
+uri = "mongodb://mongo1:27017/userdb"
+db_name = "userdb"
+collection = "users"
+timeout = 4 # seconds

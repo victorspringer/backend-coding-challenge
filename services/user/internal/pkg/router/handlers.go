@@ -15,11 +15,12 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	u, err := rt.repository.FindByUsername(username)
+	u, err := rt.repository.FindByUsername(ctx, username)
 	if err != nil {
-		rt.logger.Error("user not found", log.Error(err), log.String("requestId", getRequestID(r.Context())))
+		rt.logger.Error("user not found", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -28,11 +29,13 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	defer r.Body.Close()
 
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", getRequestID(r.Context())))
+		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -40,7 +43,7 @@ func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 	var p createPayload
 	err = json.Unmarshal(b, &p)
 	if err != nil {
-		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", getRequestID(r.Context())))
+		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -49,14 +52,14 @@ func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 
 	vu, err := domain.NewValidatedUser(u)
 	if err != nil {
-		rt.logger.Error("invalid user data", log.Error(err), log.String("requestId", getRequestID(r.Context())))
+		rt.logger.Error("invalid user data", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	u, err = rt.repository.Create(vu)
+	u, err = rt.repository.Create(ctx, vu)
 	if err != nil {
-		rt.logger.Error("failed to create user", log.Error(err), log.String("requestId", getRequestID(r.Context())))
+		rt.logger.Error("failed to create user", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}
