@@ -1,0 +1,9 @@
+[user_service]
+environment = "development"
+log_level = "debug"
+    [user_service.server]
+    port = ":8081"
+    read_timeout = 5 # seconds
+    write_timeout = 5
+    idle_timeout = 5
+
