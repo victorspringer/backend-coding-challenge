@@ -10,13 +10,13 @@ import (
 
 // User entity.
 type User struct {
-	ID        string    `bson:"id"`
-	CreatedAt time.Time `bson:"createdAt"`
-	UpdatedAt time.Time `bson:"updatedAt"`
-	Username  string    `bson:"username"`
-	Password  string    `bson:"password"`
-	Name      string    `bson:"name"`
-	Picture   string    `bson:"picture"`
+	ID        string    `json:"id" bson:"id"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
+	Username  string    `json:"username" bson:"username"`
+	Password  string    `json:"password" bson:"password"`
+	Name      string    `json:"name" bson:"name"`
+	Picture   string    `json:"picture" bson:"picture"`
 }
 
 // NewUser returns an instance of the User entity.
