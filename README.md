@@ -23,10 +23,13 @@ In order to run the system locally, there are two simple alternatives. Note that
 ```bash
 make compose
 ```
-This will spin up all the containerized components.
+This command will spin up all the containerized components.
 
-**2. See the [docs](#-documentations):**
-
+**2. See the [documentations](#-documentations) to learn how to start each service or client independently. For the databases, either you run your own instances of [MongoDB](https://www.mongodb.com/) or just run:**
+```bash
+make run-db
+```
+This command will spin up all the 3 MongoDB containers.
 
 ## ✅ Requirements
 
