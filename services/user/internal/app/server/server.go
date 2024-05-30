@@ -33,7 +33,9 @@ func Init(ctx context.Context, cfg *config.Config, logger *log.Logger) error {
 
 	defer func() {
 		if err := db.Close(ctx); err != nil {
-			logger.Error("error during database connection pool termination", log.Error(err))
+			logger.Error("failed to close database connection pool", log.Error(err))
+		} else {
+			logger.Debug("database connection closed")
 		}
 	}()
 
