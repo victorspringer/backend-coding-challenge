@@ -7,8 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// TODO: add comments
-
+// User entity.
 type User struct {
 	ID        string
 	CreatedAt time.Time
@@ -17,6 +16,19 @@ type User struct {
 	Password  string
 	Name      string
 	Picture   string
+}
+
+// NewUser returns an instance of the User entity.
+func NewUser(username, password, name, picture string) *User {
+	return &User{
+		ID:        uuid.New().String(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Username:  username,
+		Password:  password,
+		Name:      name,
+		Picture:   picture,
+	}
 }
 
 func (p *User) validate() error {
@@ -38,16 +50,4 @@ func (p *User) validate() error {
 	}
 
 	return nil
-}
-
-func NewUser(username, password, name, picture string) *User {
-	return &User{
-		ID:        uuid.New().String(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Username:  username,
-		Password:  password,
-		Name:      name,
-		Picture:   picture,
-	}
 }

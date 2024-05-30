@@ -13,7 +13,7 @@ const (
 	ctxKeyRequestID contextKey = "requestID"
 )
 
-// ContextMiddleware generates requests UUIDs.
+// ContextMiddleware adds data into the request's context (e.g. UUID).
 func (rt *router) ContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := uuid.New().String()

@@ -9,7 +9,6 @@ import (
 )
 
 // TODO: implement repository
-// review comments
 // tests
 
 func main() {

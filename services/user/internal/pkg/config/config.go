@@ -7,8 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// TODO: add comments
-
+// Config contains the application configuration parameters;
 type Config struct {
 	UserService struct {
 		Environment string `mapstructure:"environment"`
@@ -22,6 +21,7 @@ type Config struct {
 	} `mapstructure:"user_service"`
 }
 
+// New returns a new instance of Config.
 func New(env string) (*Config, error) {
 	cfg := &Config{}
 	viper.AutomaticEnv()

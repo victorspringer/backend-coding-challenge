@@ -12,7 +12,7 @@ type Logger struct {
 	*zap.Logger
 }
 
-// New returns a new instance of a logger.
+// New returns a new instance of Logger.
 func New(logLevel string) *Logger {
 	cfg := zapcore.EncoderConfig{
 		MessageKey:     "msg",

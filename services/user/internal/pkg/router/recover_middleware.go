@@ -8,7 +8,7 @@ import (
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
 )
 
-// RecoverMiddleware is a middleware that recovers from panics.
+// RecoverMiddleware recovers the application from panic during a request.
 func (rt *router) RecoverMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
