@@ -20,10 +20,6 @@ type database struct {
 	timeout    time.Duration
 }
 
-type userDocument struct {
-	User domain.User
-}
-
 // New returns a new instance of database.
 func New(ctx context.Context, logger *log.Logger, uri, name, collection string, timeout time.Duration) (domain.Repository, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -39,11 +35,32 @@ func New(ctx context.Context, logger *log.Logger, uri, name, collection string, 
 		return nil, err
 	}
 
+	coll := client.Database(name).Collection(collection)
+
+	// create unique indexes on the "id" and "username "fields
+	idIndex := mongo.IndexModel{
+		Keys:    bson.D{{Key: "id", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+	usernameIndex := mongo.IndexModel{
+		Keys:    bson.D{{Key: "username", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+
+	_, err = coll.Indexes().CreateOne(ctx, idIndex)
+	if err != nil {
+		return nil, err
+	}
+	_, err = coll.Indexes().CreateOne(ctx, usernameIndex)
+	if err != nil {
+		return nil, err
+	}
+
 	return &database{
 		logger:     logger,
 		client:     client,
 		name:       name,
-		collection: client.Database(name).Collection(collection),
+		collection: coll,
 		timeout:    timeout,
 	}, nil
 }
@@ -59,15 +76,10 @@ func (db *database) Close(ctx context.Context) error {
 // Create implements domain.Repository interface's Create method.
 func (db *database) Create(ctx context.Context, user *domain.ValidatedUser) (*domain.User, error) {
 	if user.IsValid() {
-		ub, err := bson.Marshal(user)
-		if err != nil {
-			return nil, err
-		}
-
 		ctx, cancel := context.WithTimeout(ctx, db.timeout)
 		defer cancel()
 
-		_, err = db.collection.InsertOne(ctx, ub)
+		_, err := db.collection.InsertOne(ctx, user.User)
 		if err != nil {
 			return nil, err
 		}
@@ -85,33 +97,33 @@ func (db *database) Create(ctx context.Context, user *domain.ValidatedUser) (*do
 func (db *database) FindByID(ctx context.Context, id string) (*domain.User, error) {
 	filter := bson.D{{Key: "id", Value: id}}
 
-	var doc userDocument
+	var u domain.User
 
 	ctx, cancel := context.WithTimeout(ctx, db.timeout)
 	defer cancel()
 
-	if err := db.collection.FindOne(ctx, filter).Decode(&doc); err != nil {
+	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
 		return nil, err
 	}
 
-	return &doc.User, nil
+	return &u, nil
 }
 
 // FindByUsername implements domain.Repository interface's FindByUsername method.
 func (db *database) FindByUsername(ctx context.Context, username string) (*domain.User, error) {
-	filter := bson.D{{Key: "user.username", Value: username}}
+	filter := bson.D{{Key: "username", Value: username}}
 
-	var doc userDocument
+	var u domain.User
 
 	ctx, cancel := context.WithTimeout(ctx, db.timeout)
 	defer cancel()
 
-	if err := db.collection.FindOne(ctx, filter).Decode(&doc); err != nil {
+	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("user %s doesn't exist", username)
 		}
 		return nil, err
 	}
 
-	return &doc.User, nil
+	return &u, nil
 }
