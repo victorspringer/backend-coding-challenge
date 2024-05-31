@@ -7,8 +7,8 @@ type ValidatedUser struct {
 }
 
 // IsValid returns true if the instance of User is validated.
-func (vp *ValidatedUser) IsValid() bool {
-	return vp.isValidated
+func (vu *ValidatedUser) IsValid() bool {
+	return vu.isValidated
 }
 
 // NewValidatedUser returns an instance of ValidatedUser if the given User instance is valid.

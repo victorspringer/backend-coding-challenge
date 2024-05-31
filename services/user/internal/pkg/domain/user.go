@@ -38,6 +38,9 @@ func (u *User) validate() error {
 	if u.Username == "" {
 		return errors.New("username is required")
 	}
+	if u.ID != u.Username {
+		return errors.New("id and username must be the same")
+	}
 	if u.Password == "" {
 		return errors.New("password is required")
 	}
