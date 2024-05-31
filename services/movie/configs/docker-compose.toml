@@ -1,0 +1,14 @@
+[movie_service]
+environment = "docker-compose"
+log_level = "debug"
+    [movie_service.server]
+    port = ":8081"
+    read_timeout = 5 # seconds
+    write_timeout = 5
+    idle_timeout = 5
+
+[mongodb]
+uri = "mongodb://mongo3:27017/moviedb"
+db_name = "moviedb"
+collection = "movies"
+timeout = 4 # seconds
