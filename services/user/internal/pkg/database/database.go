@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/domain"
@@ -91,6 +92,9 @@ func (db *database) FindByID(ctx context.Context, id string) (*domain.User, erro
 	defer cancel()
 
 	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, fmt.Errorf("user %s doesn't exist", id)
+		}
 		return nil, err
 	}
 
