@@ -41,13 +41,13 @@ The dataset used in this task is provided by [TMDB](https://www.themoviedb.org/)
 
 ## ✅ Requirements
 
-- [ ] The backend should expose RESTful endpoints to handle user input and
+- [x] The backend should expose RESTful endpoints to handle user input and
   return movie ratings.
 - [x] The system should store data in a database. You can use any existing
   dataset or API to populate the initial database.
 - [x] Implement user endpoints to create and view user information.
 - [x] Implement movie endpoints to create and view movie information.
-- [ ] Implement a rating system to rate the entertainment value of a movie.
+- [x] Implement a rating system to rate the entertainment value of a movie.
 - [ ] Implement a basic profile where users can view their rated movies.
 - [ ] Include unit tests to ensure the reliability of your code.
 - [x] Ensure proper error handling and validation of user inputs.
