@@ -7,8 +7,8 @@ type ValidatedMovie struct {
 }
 
 // IsValid returns true if the instance of Movie is validated.
-func (vp *ValidatedMovie) IsValid() bool {
-	return vp.isValidated
+func (vm *ValidatedMovie) IsValid() bool {
+	return vm.isValidated
 }
 
 // NewValidatedMovie returns an instance of ValidatedMovie if the given Movie instance is valid.
