@@ -147,16 +147,13 @@ func main() {
 			}
 
 			genres := strings.Split(record[headerMap["genres"]], ", ")
-			keywords := strings.Split(record[headerMap["keywords"]], ", ")
 
 			movie := domain.Movie{
 				ID:            record[headerMap["id"]],
 				Title:         record[headerMap["title"]],
 				OriginalTitle: record[headerMap["original_title"]],
-				Overview:      record[headerMap["overview"]],
 				Poster:        "https://image.tmdb.org/t/p/w220_and_h330_face" + record[headerMap["poster_path"]],
 				Genres:        genres,
-				Keywords:      keywords,
 				CreatedAt:     time.Now(),
 				UpdatedAt:     time.Now(),
 			}

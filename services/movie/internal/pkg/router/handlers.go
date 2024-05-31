@@ -18,14 +18,14 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := chi.URLParam(r, "id")
 
-	u, err := rt.repository.FindByID(ctx, id)
+	m, err := rt.repository.FindByID(ctx, id)
 	if err != nil {
 		rt.logger.Error("movie not found", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	rt.respond(w, r, u, http.StatusOK)
+	rt.respond(w, r, m, http.StatusOK)
 }
 
 func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
@@ -48,21 +48,21 @@ func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := domain.NewMovie(p.Title, p.OriginalTitle, p.Overview, p.Poster, p.Genres, p.Keywords)
+	m := domain.NewMovie(p.Title, p.OriginalTitle, p.Poster, p.Genres)
 
-	vu, err := domain.NewValidatedMovie(u)
+	vm, err := domain.NewValidatedMovie(m)
 	if err != nil {
 		rt.logger.Error("invalid movie data", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	u, err = rt.repository.Create(ctx, vu)
+	m, err = rt.repository.Create(ctx, vm)
 	if err != nil {
 		rt.logger.Error("failed to create movie", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	rt.respond(w, r, u, http.StatusCreated)
+	rt.respond(w, r, m, http.StatusCreated)
 }
