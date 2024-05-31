@@ -31,14 +31,22 @@ make run-db
 ```
 This command will spin up all the 3 MongoDB containers.
 
+### Database migration
+
+To populate the database with 1M+ movies data, run:
+```bash
+cd services/movie && make migrate
+```
+The dataset used in this task is provided by [TMDB](https://www.themoviedb.org/) under [ODC Attribution License (ODC-By)](https://opendatacommons.org/licenses/by/1-0/index.html).
+
 ## ✅ Requirements
 
 - [ ] The backend should expose RESTful endpoints to handle user input and
   return movie ratings.
-- [ ] The system should store data in a database. You can use any existing
+- [x] The system should store data in a database. You can use any existing
   dataset or API to populate the initial database.
 - [x] Implement user endpoints to create and view user information.
-- [ ] Implement movie endpoints to create and view movie information.
+- [x] Implement movie endpoints to create and view movie information.
 - [ ] Implement a rating system to rate the entertainment value of a movie.
 - [ ] Implement a basic profile where users can view their rated movies.
 - [ ] Include unit tests to ensure the reliability of your code.
