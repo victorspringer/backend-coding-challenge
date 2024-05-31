@@ -1,0 +1,14 @@
+[rating_service]
+environment = "development"
+log_level = "debug"
+    [rating_service.server]
+    port = ":8081"
+    read_timeout = 5 # seconds
+    write_timeout = 5
+    idle_timeout = 5
+
+[mongodb]
+uri = "mongodb://localhost:27018/ratingdb"
+db_name = "ratingdb"
+collection = "ratings"
+timeout = 4 # seconds
