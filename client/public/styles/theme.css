@@ -1,0 +1,10 @@
+.mrs {
+    span {
+        display: inline-block;
+
+        &::first-letter {
+            color: #D10000;
+            font-weight: 700;
+        }
+    }
+}
