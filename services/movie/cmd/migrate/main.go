@@ -55,7 +55,7 @@ func main() {
 
 	log.Println("decompressing the csv file")
 
-	zipFilePath := "assets/TMDB_movie_dataset_v11.csv.zip"
+	zipFilePath := "assets/dataset.zip"
 	outputDir := "assets"
 	csvFilePath, err := unzip(zipFilePath, outputDir)
 	if err != nil {
