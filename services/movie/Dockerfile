@@ -12,6 +12,6 @@ COPY . .
 
 RUN go build -o movieservice ./cmd/service
 
-EXPOSE 8081
+EXPOSE 8083
 
 CMD ["./movieservice"]
