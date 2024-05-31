@@ -9,15 +9,25 @@ import (
 
 type response struct {
 	StatusCode int         `json:"statusCode"`
-	Body       interface{} `json:"response"`
+	Response   interface{} `json:"response,omitempty"`
+	Error      string      `json:"error,omitempty"`
 }
 
 func (rt *router) respond(w http.ResponseWriter, r *http.Request, body interface{}, code int) {
 	w.Header().Set("Content-Type", "application/json")
 
-	res := response{
-		StatusCode: code,
-		Body:       body,
+	var res response
+
+	if code >= 400 {
+		res = response{
+			StatusCode: code,
+			Error:      body.(string),
+		}
+	} else {
+		res = response{
+			StatusCode: code,
+			Response:   body,
+		}
 	}
 
 	b, err := json.Marshal(res)

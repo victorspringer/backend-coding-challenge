@@ -138,6 +138,10 @@ func (db *database) FindByUserID(ctx context.Context, userID string) ([]*domain.
 		list = append(list, &r)
 	}
 
+	if len(list) == 0 {
+		return nil, errors.New("user has no ratings")
+	}
+
 	return list, nil
 }
 
@@ -162,6 +166,10 @@ func (db *database) FindByMovieID(ctx context.Context, movieID string) ([]*domai
 			return nil, err
 		}
 		list = append(list, &r)
+	}
+
+	if len(list) == 0 {
+		return nil, errors.New("movie has no ratings")
 	}
 
 	return list, nil
