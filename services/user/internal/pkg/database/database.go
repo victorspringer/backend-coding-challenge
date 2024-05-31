@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/domain"
@@ -37,21 +37,12 @@ func New(ctx context.Context, logger *log.Logger, uri, name, collection string, 
 
 	coll := client.Database(name).Collection(collection)
 
-	// create unique indexes on the "id" and "username "fields
+	// create unique index on the "id" field
 	idIndex := mongo.IndexModel{
 		Keys:    bson.D{{Key: "id", Value: 1}},
 		Options: options.Index().SetUnique(true),
 	}
-	usernameIndex := mongo.IndexModel{
-		Keys:    bson.D{{Key: "username", Value: 1}},
-		Options: options.Index().SetUnique(true),
-	}
-
 	_, err = coll.Indexes().CreateOne(ctx, idIndex)
-	if err != nil {
-		return nil, err
-	}
-	_, err = coll.Indexes().CreateOne(ctx, usernameIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -87,10 +78,7 @@ func (db *database) Create(ctx context.Context, user *domain.ValidatedUser) (*do
 		return &user.User, nil
 	}
 
-	return nil, fmt.Errorf(
-		"invalid user (id: %s, username: %s, md5 password: %s, name: %s, picture: %s)",
-		user.ID, user.Username, user.Password, user.Name, user.Picture,
-	)
+	return nil, errors.New("invalid user data")
 }
 
 // FindByID implements domain.Repository interface's FindByID method.
@@ -103,25 +91,6 @@ func (db *database) FindByID(ctx context.Context, id string) (*domain.User, erro
 	defer cancel()
 
 	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
-		return nil, err
-	}
-
-	return &u, nil
-}
-
-// FindByUsername implements domain.Repository interface's FindByUsername method.
-func (db *database) FindByUsername(ctx context.Context, username string) (*domain.User, error) {
-	filter := bson.D{{Key: "username", Value: username}}
-
-	var u domain.User
-
-	ctx, cancel := context.WithTimeout(ctx, db.timeout)
-	defer cancel()
-
-	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, fmt.Errorf("user %s doesn't exist", username)
-		}
 		return nil, err
 	}
 

@@ -4,31 +4,30 @@ import (
 	"errors"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/image"
 )
 
 // User entity.
 type User struct {
 	ID        string    `json:"id" bson:"id"`
-	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
 	Username  string    `json:"username" bson:"username"`
 	Password  string    `json:"password" bson:"password"`
 	Name      string    `json:"name" bson:"name"`
 	Picture   string    `json:"picture" bson:"picture"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
 }
 
 // NewUser returns an instance of the User entity.
 func NewUser(username, password, name, picture string) *User {
 	return &User{
-		ID:        uuid.New().String(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		ID:        username, // id and username are the same, as the username is unique
 		Username:  username,
 		Password:  password,
 		Name:      name,
 		Picture:   picture,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 }
 
@@ -46,7 +45,7 @@ func (u *User) validate() error {
 		return errors.New("name is required")
 	}
 	if u.Picture != "" && !image.IsValidSource(u.Picture) {
-		return errors.New("provided image source is invalid or too slow to load")
+		return errors.New("provided picture image source is invalid or too slow to load")
 	}
 	if u.CreatedAt.After(u.UpdatedAt) {
 		return errors.New("created_at must be before updated_at")

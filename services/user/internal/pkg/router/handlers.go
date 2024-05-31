@@ -18,7 +18,7 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
 
-	u, err := rt.repository.FindByUsername(ctx, username)
+	u, err := rt.repository.FindByID(ctx, username)
 	if err != nil {
 		rt.logger.Error("user not found", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusNotFound)
