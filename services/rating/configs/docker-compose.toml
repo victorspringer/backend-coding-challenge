@@ -2,7 +2,7 @@
 environment = "docker-compose"
 log_level = "debug"
     [rating_service.server]
-    port = ":8081"
+    port = ":8082"
     read_timeout = 5 # seconds
     write_timeout = 5
     idle_timeout = 5
