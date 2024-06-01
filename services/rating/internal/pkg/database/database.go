@@ -41,8 +41,8 @@ func New(ctx context.Context, logger *log.Logger, uri, name, collection string, 
 	// this ensures that a user will have only one rating for a movie
 	compoundIndex := mongo.IndexModel{
 		Keys: bson.D{
-			{Key: "userid", Value: 1},
-			{Key: "movieid", Value: 1},
+			{Key: "userId", Value: 1},
+			{Key: "movieId", Value: 1},
 		},
 		Options: options.Index().SetUnique(true),
 	}
