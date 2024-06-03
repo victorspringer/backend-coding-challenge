@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/domain"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/log"
 )
@@ -27,7 +29,16 @@ func New(repo domain.Repository, logger *log.Logger) Router {
 // GetHandler returns the router's http handler.
 func (rt *router) GetHandler() http.Handler {
 	r := chi.NewRouter()
-	r.Use(rt.ContextMiddleware, rt.RecoverMiddleware)
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
+
+	r.Use(rt.ContextMiddleware, middleware.Recoverer)
 
 	r.Get("/", rt.healthCheckHandler)
 	r.Get("/{id}", rt.findHandler)
