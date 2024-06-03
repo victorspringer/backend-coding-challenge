@@ -18,11 +18,13 @@
     "@mui/material": "latest",
     "@mui/material-nextjs": "latest",
     "@svgr/webpack": "^8.1.0",
+    "isomorphic-fetch": "^3.0.0",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/isomorphic-fetch": "^0.0.39",
     "@types/node": "latest",
     "@types/react": "latest",
     "eslint": "latest",
