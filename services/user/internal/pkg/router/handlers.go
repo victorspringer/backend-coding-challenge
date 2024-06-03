@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/domain"
-	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
 )
 
 func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {

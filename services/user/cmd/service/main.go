@@ -4,9 +4,9 @@ import (
 	"context"
 	"os"
 
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/app/server"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/config"
-	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
 )
 
 func main() {

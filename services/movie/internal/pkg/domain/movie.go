@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/image"
+	"github.com/victorspringer/backend-coding-challenge/lib/image"
 )
 
 // Movie entity.
@@ -32,7 +32,12 @@ func NewMovie(title, originalTitle, poster string, genres []string) *Movie {
 	}
 }
 
-func (m *Movie) validate() error {
+func (m *Movie) validate(validateImageContent ...bool) error {
+	vc := true
+	if len(validateImageContent) > 0 {
+		vc = validateImageContent[0]
+	}
+
 	if m.ID == "" {
 		return errors.New("id is required")
 	}
@@ -45,15 +50,14 @@ func (m *Movie) validate() error {
 	if m.Poster == "" {
 		return errors.New("poster is required")
 	}
-	if !image.IsValidSource(m.Poster) {
-		return errors.New("provided poster image source is invalid or too slow to load")
-	}
 	if len(m.Genres) == 0 {
 		return errors.New("at least one genre is required")
 	}
 	if m.CreatedAt.After(m.UpdatedAt) {
 		return errors.New("created_at must be before updated_at")
 	}
-
+	if !image.IsValidSource(m.Poster, vc) {
+		return errors.New("provided poster image source is invalid or too slow to load")
+	}
 	return nil
 }

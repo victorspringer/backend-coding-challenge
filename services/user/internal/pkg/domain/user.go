@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/image"
+	"github.com/victorspringer/backend-coding-challenge/lib/image"
 )
 
 // User entity.
@@ -31,7 +31,12 @@ func NewUser(username, password, name, picture string) *User {
 	}
 }
 
-func (u *User) validate() error {
+func (u *User) validate(validateImageContent ...bool) error {
+	vc := true
+	if len(validateImageContent) > 0 {
+		vc = validateImageContent[0]
+	}
+
 	if u.ID == "" {
 		return errors.New("id is required")
 	}
@@ -47,7 +52,7 @@ func (u *User) validate() error {
 	if u.Name == "" {
 		return errors.New("name is required")
 	}
-	if u.Picture != "" && !image.IsValidSource(u.Picture) {
+	if u.Picture != "" && !image.IsValidSource(u.Picture, vc) {
 		return errors.New("provided picture image source is invalid or too slow to load")
 	}
 	if u.CreatedAt.After(u.UpdatedAt) {

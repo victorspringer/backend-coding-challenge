@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/config"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/database"
-	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/router"
 )
 

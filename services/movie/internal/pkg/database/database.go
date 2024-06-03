@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/domain"
-	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

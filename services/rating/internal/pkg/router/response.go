@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/victorspringer/backend-coding-challenge/services/rating/internal/pkg/log"
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 )
 
 type response struct {

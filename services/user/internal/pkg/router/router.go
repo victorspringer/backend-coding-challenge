@@ -7,8 +7,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/domain"
-	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
 )
 
 // Router is the interface for the application server http handler.

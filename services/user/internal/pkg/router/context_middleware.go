@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/log"
+	"github.com/victorspringer/backend-coding-challenge/lib/log"
 )
 
 type contextKey string
