@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config contains the application configuration parameters;
+// Config contains the application configuration parameters.
 type Config struct {
 	RatingService struct {
 		Environment string `mapstructure:"environment"`
