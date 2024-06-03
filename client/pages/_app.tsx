@@ -9,6 +9,7 @@ import Navigation from '../src/components/Navigation';
 import { Container } from '@mui/material';
 import Box from '@mui/material/Box';
 import '../public/styles/theme.css';
+import Footer from '../src/components/Footer';
 
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -21,7 +22,7 @@ export default function MyApp(props: AppProps) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <Navigation />
-        <Container maxWidth="lg">
+        <Container maxWidth="xl">
           <Box
             sx={{
               my: 4,
@@ -34,6 +35,7 @@ export default function MyApp(props: AppProps) {
             <Component {...pageProps} />
           </Box>
         </Container>
+        <Footer />
       </ThemeProvider>
     </AppCacheProvider>
   );
