@@ -18,7 +18,10 @@ const (
 // ContextMiddleware adds data into the request's context (e.g. UUID).
 func (rt *router) ContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		requestID := uuid.New().String()
+		requestID := r.Header.Get("X-Request-ID")
+		if requestID == "" {
+			requestID = uuid.New().String()
+		}
 		w.Header().Set("X-Request-ID", requestID)
 
 		start := time.Now()
