@@ -48,8 +48,8 @@ The dataset used in this task is provided by [TMDB](https://www.themoviedb.org/)
 - [x] Implement user endpoints to create and view user information.
 - [x] Implement movie endpoints to create and view movie information.
 - [x] Implement a rating system to rate the entertainment value of a movie.
-- [ ] Implement a basic profile where users can view their rated movies.
-- [ ] Include unit tests to ensure the reliability of your code.
+- [x] Implement a basic profile where users can view their rated movies.
+- [x] Include unit tests to ensure the reliability of your code.
 - [x] Ensure proper error handling and validation of user inputs.
 
 ## ✨ Bonus Points
