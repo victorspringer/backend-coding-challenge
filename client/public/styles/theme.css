@@ -8,3 +8,26 @@
         }
     }
 }
+
+.profile-avatar {
+    border: 4px solid #FFFFFF;
+    background-color: #B105F4;
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+
+.profile-avatar-l {
+    margin: -90px auto 12px auto;
+    width: 160px;
+    height: 160px;
+}
+
+.card {
+    height: fit-content;
+}
+
+.movie-card {
+    width: calc(25% - 12px);
+    min-width: 220px;
+    height: fit-content;
+}
