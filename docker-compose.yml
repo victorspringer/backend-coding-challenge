@@ -47,6 +47,7 @@ services:
     image: mongo:latest
     ports:
       - "27017:27017"
+    command: mongod --quiet --logpath /dev/null
     volumes:
       - mongo1data:/data/db
 
@@ -54,6 +55,7 @@ services:
     image: mongo:latest
     ports:
       - "27018:27017"
+    command: mongod --quiet --logpath /dev/null
     volumes:
       - mongo2data:/data/db
 
@@ -61,6 +63,7 @@ services:
     image: mongo:latest
     ports:
       - "27019:27017"
+    command: mongod --quiet --logpath /dev/null
     volumes:
       - mongo3data:/data/db
 

@@ -2,8 +2,6 @@ module github.com/victorspringer/backend-coding-challenge/services/movie
 
 go 1.22.3
 
-replace github.com/victorspringer/backend-coding-challenge/lib => ../../lib
-
 require (
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/cors v1.2.1
@@ -13,7 +11,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.3
-	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-00010101000000-000000000000
+	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240603145055-da615b198e2b
 	go.mongodb.org/mongo-driver v1.15.0
 )
 
