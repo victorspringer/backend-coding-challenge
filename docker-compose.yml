@@ -34,6 +34,10 @@ services:
       context: ./client
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_USER_SERVICE_URL=http://localhost:8081
+      - NEXT_PUBLIC_RATING_SERVICE_URL=http://localhost:8082
+      - NEXT_PUBLIC_MOVIE_SERVICE_URL=http://localhost:8083
     depends_on:
       - user
       - rating
