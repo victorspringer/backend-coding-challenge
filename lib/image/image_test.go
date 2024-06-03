@@ -28,21 +28,21 @@ func TestIsValidSource(t *testing.T) {
 			if tt.imgURL == "http://slow.example.com/image.png" {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					time.Sleep(2 * time.Second)
-					http.ServeFile(w, r, "../test/files/image.png")
+					http.ServeFile(w, r, "./test/files/image.png")
 				}))
 				defer server.Close()
 				tt.imgURL = server.URL + "/image.png"
 			} else if tt.imgURL == "http://example.com/image.png" {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Set("Content-Type", "image/png")
-					http.ServeFile(w, r, "../test/files/image.png")
+					http.ServeFile(w, r, "./test/files/image.png")
 				}))
 				defer server.Close()
 				tt.imgURL = server.URL + "/image.png"
 			} else if tt.imgURL == "http://example.com/file.txt" {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Set("Content-Type", "text/plain")
-					http.ServeFile(w, r, "../test/files/file.txt")
+					http.ServeFile(w, r, "./test/files/file.txt")
 				}))
 				defer server.Close()
 				tt.imgURL = server.URL + "/file.txt"
@@ -96,21 +96,21 @@ func TestIsValidImageContent(t *testing.T) {
 			if tt.imgURL == "http://slow.example.com/image.png" {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					time.Sleep(2 * time.Second)
-					http.ServeFile(w, r, "../test/files/image.png")
+					http.ServeFile(w, r, "./test/files/image.png")
 				}))
 				defer server.Close()
 				tt.imgURL = server.URL
 			} else if tt.imgURL == "http://example.com/image.png" {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Set("Content-Type", "image/png")
-					http.ServeFile(w, r, "../test/files/image.png")
+					http.ServeFile(w, r, "./test/files/image.png")
 				}))
 				defer server.Close()
 				tt.imgURL = server.URL
 			} else if tt.imgURL == "http://example.com/image.txt" {
 				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					w.Header().Set("Content-Type", "text/plain")
-					http.ServeFile(w, r, "../test/files/file.txt")
+					http.ServeFile(w, r, "./test/files/file.txt")
 				}))
 				defer server.Close()
 				tt.imgURL = server.URL
