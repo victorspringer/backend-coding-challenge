@@ -1,0 +1,114 @@
+basePath: /
+definitions:
+  domain.User:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      picture:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+    type: object
+  router.createPayload:
+    properties:
+      md5Password:
+        type: string
+      name:
+        type: string
+      picture:
+        type: string
+      username:
+        type: string
+    type: object
+  router.response:
+    properties:
+      error:
+        type: string
+      response: {}
+      statusCode:
+        type: integer
+    type: object
+host: localhost:8081
+info:
+  contact:
+    name: Victor Springer
+  description: User Service for Movie Rating System.
+  license:
+    name: MIT License
+  title: User Service
+  version: "1.0"
+paths:
+  /{username}:
+    get:
+      description: Get user information by username
+      operationId: get-user-by-username
+      parameters:
+      - description: Username of the user
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  $ref: '#/definitions/domain.User'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Get user by username
+  /create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      operationId: create-user
+      parameters:
+      - description: User object to be created
+        in: body
+        name: username
+        required: true
+        schema:
+          $ref: '#/definitions/router.createPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  $ref: '#/definitions/domain.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Create a new user
+swagger: "2.0"

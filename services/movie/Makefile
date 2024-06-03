@@ -7,3 +7,5 @@ run:
 test:
 	go test -v ./...
 
+regenerate-docs:
+	swag init -g internal/pkg/router/router.go

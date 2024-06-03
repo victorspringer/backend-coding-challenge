@@ -1,0 +1,182 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "User Service for Movie Rating System.",
+        "title": "User Service",
+        "contact": {
+            "name": "Victor Springer"
+        },
+        "license": {
+            "name": "MIT License"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8081",
+    "basePath": "/",
+    "paths": {
+        "/create": {
+            "post": {
+                "description": "Create a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new user",
+                "operationId": "create-user",
+                "parameters": [
+                    {
+                        "description": "User object to be created",
+                        "name": "username",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/router.createPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{username}": {
+            "get": {
+                "description": "Get user information by username",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get user by username",
+                "operationId": "get-user-by-username",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username of the user",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "domain.User": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "router.createPayload": {
+            "type": "object",
+            "properties": {
+                "md5Password": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "router.response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "response": {},
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

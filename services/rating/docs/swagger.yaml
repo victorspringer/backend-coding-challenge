@@ -1,0 +1,140 @@
+basePath: /
+definitions:
+  domain.Rating:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      movieId:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: string
+      value:
+        type: number
+    type: object
+  router.createPayload:
+    properties:
+      movieId:
+        type: string
+      userId:
+        type: string
+      value:
+        type: number
+    type: object
+  router.response:
+    properties:
+      error:
+        type: string
+      response: {}
+      statusCode:
+        type: integer
+    type: object
+host: localhost:8082
+info:
+  contact:
+    name: Victor Springer
+  description: Rating Service for Movie Rating System.
+  license:
+    name: MIT License
+  title: Rating Service
+  version: "1.0"
+paths:
+  /movie/{id}:
+    get:
+      description: Get all ratings for a specific movie
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  items:
+                    $ref: '#/definitions/domain.Rating'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Find ratings by movie ID
+      tags:
+      - ratings
+  /upsert:
+    post:
+      consumes:
+      - application/json
+      description: Create a new (or override an old) rating for a movie by a user
+      parameters:
+      - description: Rating
+        in: body
+        name: rating
+        required: true
+        schema:
+          $ref: '#/definitions/router.createPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  $ref: '#/definitions/domain.Rating'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Create a new (or override an old) rating
+      tags:
+      - ratings
+  /user/{id}:
+    get:
+      description: Get all ratings given by a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  items:
+                    $ref: '#/definitions/domain.Rating'
+                  type: array
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Find ratings by user ID
+      tags:
+      - ratings
+swagger: "2.0"

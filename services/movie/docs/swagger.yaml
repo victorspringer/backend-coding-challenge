@@ -1,0 +1,118 @@
+basePath: /
+definitions:
+  domain.Movie:
+    properties:
+      createdAt:
+        type: string
+      genres:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      originalTitle:
+        type: string
+      poster:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  router.createPayload:
+    properties:
+      genres:
+        items:
+          type: string
+        type: array
+      originalTitle:
+        type: string
+      poster:
+        type: string
+      title:
+        type: string
+    type: object
+  router.response:
+    properties:
+      error:
+        type: string
+      response: {}
+      statusCode:
+        type: integer
+    type: object
+host: localhost:8083
+info:
+  contact:
+    name: Victor Springer
+  description: Movie Service for Movie Rating System.
+  license:
+    name: MIT License
+  title: Movie Service
+  version: "1.0"
+paths:
+  /{id}:
+    get:
+      description: Get movie information by ID
+      operationId: get-movie-by-id
+      parameters:
+      - description: ID of the movie
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  $ref: '#/definitions/domain.Movie'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Get movie by ID
+  /create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new movie
+      operationId: create-movie
+      parameters:
+      - description: Movie object to be created
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/router.createPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  $ref: '#/definitions/domain.Movie'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Create a new movie
+swagger: "2.0"

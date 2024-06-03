@@ -14,6 +14,15 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	rt.respond(w, r, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
+// @Summary Get movie by ID
+// @Description Get movie information by ID
+// @ID get-movie-by-id
+// @Param id path string true "ID of the movie"
+// @Produce json
+// @Success 200 {object} response{response=domain.Movie}
+// @Failure 404 {object} response
+// @Failure 500 {object} response
+// @Router /{id} [get]
 func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := chi.URLParam(r, "id")
@@ -28,6 +37,16 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	rt.respond(w, r, m, http.StatusOK)
 }
 
+// @Summary Create a new movie
+// @Description Create a new movie
+// @ID create-movie
+// @Accept json
+// @Produce json
+// @Param movie body createPayload true "Movie object to be created"
+// @Success 201 {object} response{response=domain.Movie}
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Router /create [post]
 func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

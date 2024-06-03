@@ -7,9 +7,19 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
+	_ "github.com/victorspringer/backend-coding-challenge/services/user/docs"
 	"github.com/victorspringer/backend-coding-challenge/services/user/internal/pkg/domain"
 )
+
+// @title User Service
+// @version 1.0
+// @description User Service for Movie Rating System.
+// @contact.name Victor Springer
+// @license.name MIT License
+// @host localhost:8081
+// @BasePath /
 
 // Router is the interface for the application server http handler.
 type Router interface {
@@ -38,9 +48,18 @@ func (rt *router) GetHandler() http.Handler {
 		MaxAge:           300,
 	}))
 
-	r.Use(rt.ContextMiddleware, middleware.Recoverer)
+	r.Use(middleware.StripSlashes, rt.ContextMiddleware, middleware.Recoverer)
 
+	// health check
 	r.Get("/", rt.healthCheckHandler)
+
+	// docs
+	r.Get("/docs", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/docs/", http.StatusMovedPermanently)
+	})
+	r.Get("/docs/*", httpSwagger.Handler())
+
+	// endpoints
 	r.Get("/{username}", rt.findHandler)
 	r.Post("/create", rt.createHandler)
 

@@ -6,6 +6,7 @@ import { GetServerSideProps } from 'next';
 import theme from '../../src/theme';
 import StarIcon from '@mui/icons-material/Star';
 import Error from '../../src/components/Error';
+import CircularProgress from '@mui/material/CircularProgress';
 
 type User = {
     id: string;
@@ -60,7 +61,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
         if (ratingsData.error) {
             console.log(ratingsData.error);
-            props.error = { code: ratingsData.statusCode }
             return { props }
         }
 
@@ -71,8 +71,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
                 if (movieData.error) {
                     console.log(movieData.error);
-                    props.error = { code: movieData.statusCode }
-                    return { props }
+                    return null;
                 }
 
                 return {
@@ -80,7 +79,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
                     movie: movieData.response,
                     value: rating.value,
                 };
-            })
+            }).filter((rating: Rating) => rating !== null)
         );
 
         props.ratings = ratings;
@@ -92,9 +91,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     return { props };
 };
 
-const updateRating = async (rating: Rating, value: number) => {
+const updateRating = async (value: number, rating?: Rating) => {
+    if (!rating) return;
+
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_RATING_SERVICE_URL}/create`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_RATING_SERVICE_URL}/upsert`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -133,21 +134,25 @@ export default function Profile({ user, ratings, error }: Props) {
         return <Error code={error.code} />;
     }
 
-    if (!user || !ratings) {
-        return <p>Loading...</p>;
+    if (!user) {
+        return (
+            <Box my={20}>
+                <CircularProgress color='primary' />
+            </Box>
+        );
     }
 
     const firstName = user.name.split(" ")[0];
 
-    const [values, setValues] = React.useState<number[]>(ratings.map(rating => rating.value));
-    const [hover, setHover] = React.useState<number[]>(ratings.map(rating => rating.value));
+    const [values, setValues] = React.useState<number[]>(ratings?.map(rating => rating.value) || []);
+    const [hover, setHover] = React.useState<number[]>(ratings?.map(rating => rating.value) || []);
 
     const handleChange = (index: number) => async (event: React.ChangeEvent<{}>, newValue: number | null) => {
         if (newValue !== null) {
             const newValues = [...values];
             newValues[index] = newValue;
             setValues(newValues);
-            await updateRating(ratings[index], newValue);
+            await updateRating(newValue, ratings ? ratings[index] : undefined);
         }
     };
 
@@ -206,7 +211,7 @@ export default function Profile({ user, ratings, error }: Props) {
                             gap: '16px',
                         }}>
                         {
-                            ratings.map((rating, i) => {
+                            ratings?.map((rating, i) => {
                                 return (
                                     <Card key={i} className='movie-card' variant='outlined'>
                                         <CardMedia

@@ -87,8 +87,8 @@ func (db *database) Close(ctx context.Context) error {
 	return nil
 }
 
-// Create implements domain.Repository interface's Create method.
-func (db *database) Create(ctx context.Context, rating *domain.ValidatedRating) (*domain.Rating, error) {
+// Upsert implements domain.Repository interface's Upsert method.
+func (db *database) Upsert(ctx context.Context, rating *domain.ValidatedRating) (*domain.Rating, error) {
 	if rating.IsValid() {
 		filter := bson.M{
 			"userId":  rating.Rating.UserID,

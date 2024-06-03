@@ -14,6 +14,15 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	rt.respond(w, r, http.StatusText(http.StatusOK), http.StatusOK)
 }
 
+// @Summary Get user by username
+// @Description Get user information by username
+// @ID get-user-by-username
+// @Param username path string true "Username of the user"
+// @Produce json
+// @Success 200 {object} response{response=domain.User}
+// @Failure 404 {object} response
+// @Failure 500 {object} response
+// @Router /{username} [get]
 func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	username := chi.URLParam(r, "username")
@@ -28,6 +37,16 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	rt.respond(w, r, u, http.StatusOK)
 }
 
+// @Summary Create a new user
+// @Description Create a new user
+// @ID create-user
+// @Accept json
+// @Produce json
+// @Param user body createPayload true "User object to be created"
+// @Success 201 {object} response{response=domain.User}
+// @Failure 400 {object} response
+// @Failure 500 {object} response
+// @Router /create [post]
 func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
