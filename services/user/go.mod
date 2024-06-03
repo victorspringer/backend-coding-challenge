@@ -12,6 +12,7 @@ require (
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.3
 	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240603145055-da615b198e2b
+	github.com/victorspringer/http-cache v0.0.0-20240523143319-7d9f48f8ab91
 	go.mongodb.org/mongo-driver v1.15.0
 )
 

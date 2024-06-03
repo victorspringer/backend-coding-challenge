@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -11,6 +12,8 @@ import (
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	_ "github.com/victorspringer/backend-coding-challenge/services/movie/docs"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/domain"
+	cache "github.com/victorspringer/http-cache"
+	"github.com/victorspringer/http-cache/adapter/memory"
 )
 
 // @title Movie Service
@@ -27,13 +30,30 @@ type Router interface {
 }
 
 type router struct {
-	repository domain.Repository
-	logger     *log.Logger
+	repository      domain.Repository
+	logger          *log.Logger
+	cacheMiddleware func(next http.Handler) http.Handler
 }
 
 // New returns a new instance of Router.
 func New(repo domain.Repository, logger *log.Logger) Router {
-	return &router{repo, logger}
+	memcached, err := memory.NewAdapter(
+		memory.AdapterWithAlgorithm(memory.LRU),
+		memory.AdapterWithCapacity(10000000),
+	)
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+	cacheClient, err := cache.NewClient(
+		cache.ClientWithAdapter(memcached),
+		cache.ClientWithTTL(10*time.Minute),
+		cache.ClientWithRefreshKey("opn"),
+	)
+	if err != nil {
+		logger.Fatal(err.Error())
+	}
+
+	return &router{repo, logger, cacheClient.Middleware}
 }
 
 // GetHandler returns the router's http handler.
@@ -48,7 +68,7 @@ func (rt *router) GetHandler() http.Handler {
 		MaxAge:           300,
 	}))
 
-	r.Use(rt.ContextMiddleware, middleware.Recoverer)
+	r.Use(rt.ContextMiddleware, rt.cacheMiddleware, middleware.Recoverer)
 
 	// health check
 	r.Get("/", rt.healthCheckHandler)

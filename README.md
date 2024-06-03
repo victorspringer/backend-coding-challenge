@@ -57,5 +57,5 @@ The dataset used in this task is provided by [TMDB](https://www.themoviedb.org/)
 - [ ] Implement authentication and authorization mechanisms for users.
 - [x] Provide documentation for your API endpoints using tools like Swagger.
 - [x] Implement logging to record errors and debug information.
-- [ ] Implement caching mechanisms to improve the rating system's performance.
+- [x] Implement caching mechanisms to improve the rating system's performance.
 - [ ] Implement CI/CD quality gates.
