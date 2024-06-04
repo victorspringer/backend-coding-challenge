@@ -1,0 +1,47 @@
+[authentication_service]
+environment = "development"
+log_level = "debug"
+private_key = """
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCEb5c+3KR1ed2vWei9mx6gY2pjU4mo+q9/8Tl9+YkkEK6otoum
++JjA+QQMIHXdEK9+e5+vxNoa9waWPO+uj2ExtQnlHBtVR6PvR7wzA5/PRXfYPwZK
+PaOJutM2pA5GXliEyjFXKbf0Mn/TEC2MOYVfEjvjLj7w826GApYiIZPthwIDAQAB
+AoGAe6fWCJPr2uSW4QuKDL+xsQAibeuqNWUcSNHrZHyCWHJbIpyPeK/VsRjRdqE4
+a9kQg4DacTvUiijstYrgIJUvoeTcWDmpXssuzYggpqS2/uZFAYNOI5L3z64LpmhK
+q/dmceqOC6SmvqwQesT9GczLN2hCzZ3JTJdbsq3b0xLlJ0ECQQDbKLqp/deNSiiB
+UcIeAeWCXeRekKK/ulY+nUwIJ7HPoXEx0JrIAtcSFmHhy6r5bIySnT3iqbtOexK1
+QtuTBjVFAkEAmrLTAEhLm01Svpd+oUjBHAK5+aEZ2UyOy8jbkK8sGAaosWEC2tpq
+y4oct6udq3FUJAHjcZL1DCqZDETYySfmWwJBAK1P6UYTYwnt8lhKQpueXlSZUcbi
+1IGQpzF/DSiJ05jiD/UYBb9UV6aLIr8AZGY5THWJee4s0d4/f8zuYVxElY0CQHTX
+WczdzdUnqrZvP+JbTBd267Ziel6Il1XNiCCYXeprpSAMEJbx3zWKRDRpd3XU6+Mi
+VgIjJ9gfmGcO3NnZu/8CQHJYwkkZJv4YbiDGIbKrmaKa0m1sj3JvV+TvhueQ8+wc
+hNENSuI/nO2LC0sd70keAYYblzhfafkFZ7C6JI613hc=
+-----END RSA PRIVATE KEY-----
+"""
+public_key = """
+-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCEb5c+3KR1ed2vWei9mx6gY2pj
+U4mo+q9/8Tl9+YkkEK6otoum+JjA+QQMIHXdEK9+e5+vxNoa9waWPO+uj2ExtQnl
+HBtVR6PvR7wzA5/PRXfYPwZKPaOJutM2pA5GXliEyjFXKbf0Mn/TEC2MOYVfEjvj
+Lj7w826GApYiIZPthwIDAQAB
+-----END PUBLIC KEY-----
+"""
+    [authentication_service.claims]
+    issuer = "msr"
+    access_token_expiration = 900 # 15 minutes (in seconds)
+    anonymous_expiration = 31536000  # 1 year (in seconds)
+    short_refresh_token_expiration = 86400 # 1 day (in seconds)
+    long_refresh_token_expiration = 31536000  # 1 year (in seconds)
+
+    [authentication_service.server]
+    port = ":8084"
+    read_timeout = 5 # seconds
+    write_timeout = 5
+    idle_timeout = 5
+
+[user_service]
+endpoint = "http://localhost:8081"
+timeout = 4 # seconds
+
+[redis]
+addr = "localhost:6379"
