@@ -102,8 +102,8 @@ github.com/swaggo/http-swagger v1.3.4 h1:q7t/XLx0n15H1Q9/tk3Y9L4n210XzJF5WtnDX64
 github.com/swaggo/http-swagger v1.3.4/go.mod h1:9dAh0unqMBAlbp1uE2Uc2mQTxNMU/ha4UbucIg1MFkQ=
 github.com/swaggo/swag v1.16.3 h1:PnCYjPCah8FK4I26l2F/KQ4yz3sILcVUN3cTlBFA9Pg=
 github.com/swaggo/swag v1.16.3/go.mod h1:DImHIuOFXKpMFAQjcC7FG4m3Dg4+QuUgUzJmKjI/gRk=
-github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240603200828-ba8d9a68f9bc h1:s0KrmMEyWZyNeC9lB5ECxeKT6vsOD7+3jfoHAfqu+pU=
-github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240603200828-ba8d9a68f9bc/go.mod h1:viusQep/NENiam3ZRJ2qBSWUqy6ZRJiMQDWLieDZr60=
+github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240604041956-2021422838c6 h1:DFbgmZDgmUSFetwqbCxDbADcx7jsUoI6XpkBuQcUyr0=
+github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240604041956-2021422838c6/go.mod h1:viusQep/NENiam3ZRJ2qBSWUqy6ZRJiMQDWLieDZr60=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.10.0 h1:S0h4aNzvfcFsC3dRF1jLoaov7oRaKqRGC/pUEJ2yvPQ=

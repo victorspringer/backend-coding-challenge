@@ -12,7 +12,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.3
-	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240603200828-ba8d9a68f9bc
+	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240604041956-2021422838c6
 )
 
 require (
