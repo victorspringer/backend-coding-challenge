@@ -19,6 +19,11 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
 }
 
+const (
+	adminLevel = "admin" // not used yet
+	userLevel  = "user"
+)
+
 // NewUser returns an instance of the User entity.
 func NewUser(username, password, name, picture string) *User {
 	return &User{
@@ -27,7 +32,7 @@ func NewUser(username, password, name, picture string) *User {
 		Password:  password,
 		Name:      name,
 		Picture:   picture,
-		Level:     "user",
+		Level:     userLevel,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -54,8 +59,8 @@ func (u *User) validate(validateImageContent ...bool) error {
 	if u.Name == "" {
 		return errors.New("name is required")
 	}
-	if u.Level == "" {
-		return errors.New("level is required")
+	if u.Level != userLevel {
+		return errors.New("invalid user level")
 	}
 	if u.CreatedAt.After(u.UpdatedAt) {
 		return errors.New("created_at must be before updated_at")
