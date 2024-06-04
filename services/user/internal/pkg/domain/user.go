@@ -14,6 +14,7 @@ type User struct {
 	Password  string    `json:"password" bson:"password"`
 	Name      string    `json:"name" bson:"name"`
 	Picture   string    `json:"picture" bson:"picture"`
+	Level     string    `json:"level" bson:"level"`
 	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
 }
@@ -26,6 +27,7 @@ func NewUser(username, password, name, picture string) *User {
 		Password:  password,
 		Name:      name,
 		Picture:   picture,
+		Level:     "user",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -52,11 +54,14 @@ func (u *User) validate(validateImageContent ...bool) error {
 	if u.Name == "" {
 		return errors.New("name is required")
 	}
-	if u.Picture != "" && !image.IsValidSource(u.Picture, vc) {
-		return errors.New("provided picture image source is invalid or too slow to load")
+	if u.Level == "" {
+		return errors.New("level is required")
 	}
 	if u.CreatedAt.After(u.UpdatedAt) {
 		return errors.New("created_at must be before updated_at")
+	}
+	if u.Picture != "" && !image.IsValidSource(u.Picture, vc) {
+		return errors.New("provided picture image source is invalid or too slow to load")
 	}
 
 	return nil

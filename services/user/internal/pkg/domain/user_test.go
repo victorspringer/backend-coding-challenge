@@ -13,6 +13,7 @@ func TestNewUser(t *testing.T) {
 	password := "password"
 	name := "John Doe"
 	picture := "http://example.com/picture.jpg"
+	level := "user"
 
 	user := NewUser(username, password, name, picture)
 
@@ -21,6 +22,7 @@ func TestNewUser(t *testing.T) {
 	assert.Equal(t, password, user.Password)
 	assert.Equal(t, name, user.Name)
 	assert.Equal(t, picture, user.Picture)
+	assert.Equal(t, level, user.Level)
 	assert.WithinDuration(t, time.Now(), user.CreatedAt, time.Second)
 	assert.WithinDuration(t, time.Now(), user.UpdatedAt, time.Second)
 }
@@ -39,6 +41,7 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -52,6 +55,7 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -65,6 +69,7 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "invalid_url",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -77,6 +82,7 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -89,6 +95,7 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -102,6 +109,7 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -114,6 +122,7 @@ func TestUser_Validate(t *testing.T) {
 				Username:  "user123",
 				Name:      "John Doe",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -126,6 +135,7 @@ func TestUser_Validate(t *testing.T) {
 				Username:  "user123",
 				Password:  "password",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
@@ -139,10 +149,24 @@ func TestUser_Validate(t *testing.T) {
 				Password:  "password",
 				Name:      "John Doe",
 				Picture:   "http://example.com/picture.jpg",
+				Level:     "user",
 				CreatedAt: time.Now().Add(1 * time.Hour),
 				UpdatedAt: time.Now(),
 			},
 			expectedError: errors.New("created_at must be before updated_at"),
+		},
+		{
+			name: "missing Level",
+			user: &User{
+				ID:        "user123",
+				Username:  "user123",
+				Password:  "password",
+				Name:      "John Doe",
+				Picture:   "http://example.com/picture.jpg",
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+			expectedError: errors.New("level is required"),
 		},
 	}
 
