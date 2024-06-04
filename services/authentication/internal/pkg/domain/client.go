@@ -28,7 +28,7 @@ type Client struct {
 type Claims struct {
 	Name  string `json:"name,omitempty"`
 	Level Level  `json:"level"`
-	*jwt.RegisteredClaims
+	jwt.RegisteredClaims
 }
 
 // Level represents level field type for claims data structure.
@@ -80,8 +80,8 @@ func NewClient(
 
 func (c *Client) GenerateAnonymousTokens(userID string, flow FlowType) (*Tokens, error) {
 	claims := &Claims{
-		Level: AdminLevel,
-		RegisteredClaims: &jwt.RegisteredClaims{
+		Level: AnonymousLevel,
+		RegisteredClaims: jwt.RegisteredClaims{
 			Subject: userID,
 		},
 	}
@@ -102,7 +102,7 @@ func (c *Client) GenerateUserTokens(username, password string, flow FlowType) (*
 	claims := &Claims{
 		Level: Level(user.Level),
 		Name:  user.Name,
-		RegisteredClaims: &jwt.RegisteredClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			Subject: username,
 		},
 	}
@@ -112,17 +112,14 @@ func (c *Client) GenerateUserTokens(username, password string, flow FlowType) (*
 
 // generateTokens generates authentication tokens.
 func (c *Client) generateTokens(claims *Claims, flow FlowType) (*Tokens, error) {
-	if claims.RegisteredClaims == nil {
-		claims.RegisteredClaims = &jwt.RegisteredClaims{}
-	}
 	claims.Issuer = c.issuer
 	claims.IssuedAt = jwt.NewNumericDate(time.Now())
 
 	claims.ExpiresAt = jwt.NewNumericDate(claims.IssuedAt.Add(c.expiration[AccessTokenExpiration]))
-	expiresIn := c.expiration[AccessTokenExpiration]
+	ate := c.expiration[AccessTokenExpiration]
 	if claims.Level == AnonymousLevel {
 		claims.ExpiresAt = jwt.NewNumericDate(claims.IssuedAt.Add(c.expiration[AnonymousExpiration]))
-		expiresIn = c.expiration[AnonymousExpiration]
+		ate = c.expiration[AnonymousExpiration]
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
@@ -134,15 +131,17 @@ func (c *Client) generateTokens(claims *Claims, flow FlowType) (*Tokens, error) 
 
 	if claims.Level == AnonymousLevel {
 		return &Tokens{
-			AccessToken: accessToken,
-			ExpiresIn:   int64(expiresIn.Seconds()),
+			AccessToken:           accessToken,
+			AccessTokenExpiration: int64(ate.Seconds()),
 		}, nil
 	}
 
 	refreshToken := uuid.New().String()
 	var repositoryExpiration time.Duration
+	rte := c.expiration[ShortRefreshTokenExpiration]
 	if flow == RememberMeFlow {
 		repositoryExpiration = time.Duration(c.expiration[LongRefreshTokenExpiration] * 1e9)
+		rte = c.expiration[LongRefreshTokenExpiration]
 	} else {
 		repositoryExpiration = time.Duration(c.expiration[ShortRefreshTokenExpiration] * 1e9)
 	}
@@ -196,9 +195,10 @@ func (c *Client) generateTokens(claims *Claims, flow FlowType) (*Tokens, error) 
 	}
 
 	return &Tokens{
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
-		ExpiresIn:    int64(expiresIn.Seconds()),
+		AccessToken:            accessToken,
+		RefreshToken:           refreshToken,
+		AccessTokenExpiration:  int64(ate.Seconds()),
+		RefreshTokenExpiration: int64(rte.Seconds()),
 	}, nil
 }
 
@@ -270,9 +270,10 @@ func (c *Client) Refresh(refreshToken string) (*Tokens, error) {
 
 	claims.IssuedAt = jwt.NewNumericDate(time.Now())
 	claims.ExpiresAt = jwt.NewNumericDate(claims.IssuedAt.Add(c.expiration[AccessTokenExpiration]))
-	expiresIn := c.expiration[AccessTokenExpiration]
+	ate := c.expiration[AccessTokenExpiration]
 	newRefreshToken := uuid.New().String()
 	var repositoryExpiration time.Duration
+	rte := c.expiration[ShortRefreshTokenExpiration]
 	if (FlowType(flow)) == RememberMeFlow {
 		repositoryExpiration = time.Duration(c.expiration[LongRefreshTokenExpiration] * 1e9)
 	} else {
@@ -350,18 +351,23 @@ func (c *Client) Refresh(refreshToken string) (*Tokens, error) {
 	c.logger.Debug(fmt.Sprintf("token %s refreshed to %s", refreshToken, newRefreshToken))
 
 	return &Tokens{
-		AccessToken:  newAccessToken,
-		RefreshToken: newRefreshToken,
-		ExpiresIn:    int64(expiresIn.Seconds()),
+		AccessToken:            newAccessToken,
+		RefreshToken:           newRefreshToken,
+		AccessTokenExpiration:  int64(ate.Seconds()),
+		RefreshTokenExpiration: int64(rte.Seconds()),
 	}, nil
 }
 
 // ValidateAccessToken checks if logged-in user authentication token exists.
-func (c *Client) ValidateAccessToken(accessToken string) error {
+func (c *Client) ValidateAccessToken(accessToken string) (*Claims, error) {
 	claims, err := c.decryptAccessToken(accessToken)
 	if err != nil {
 		c.logger.Warn("failed to decrypt access token", log.String("access_token", accessToken), log.Error(err))
-		return ErrUnauthorized
+		return nil, ErrUnauthorized
+	}
+
+	if claims.Level == AnonymousLevel {
+		return claims, nil
 	}
 
 	ctx := context.Background()
@@ -370,16 +376,16 @@ func (c *Client) ValidateAccessToken(accessToken string) error {
 	refreshToken, err := c.refreshTokenRepository.Get(ctx, refreshTokenKey)
 	if err != nil {
 		c.logger.Debug("failed to get from refresh token repository", log.String("key", refreshTokenKey), log.Error(err))
-		return ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 
 	_, err = c.accessTokenRepository.Get(ctx, refreshToken)
 	if err != nil {
 		c.logger.Debug("failed to get from access token repository", log.String("key", refreshToken), log.Error(err))
-		return ErrUnauthorized
+		return nil, ErrUnauthorized
 	}
 
-	return nil
+	return claims, nil
 }
 
 func (c *Client) decryptAccessToken(accessToken string) (*Claims, error) {

@@ -37,7 +37,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/router.jwks"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/router.jwks"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -60,19 +72,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Tokens"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.Tokens"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     }
                 }
@@ -106,25 +130,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Tokens"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.Tokens"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     }
                 }
@@ -156,25 +192,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     }
                 }
@@ -208,25 +244,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/domain.Tokens"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.Tokens"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     }
                 }
@@ -260,25 +308,37 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.Claims"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/router.response"
                         }
                     }
                 }
@@ -286,6 +346,59 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.Claims": {
+            "type": "object",
+            "properties": {
+                "aud": {
+                    "description": "the ` + "`" + `aud` + "`" + ` (Audience) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "exp": {
+                    "description": "the ` + "`" + `exp` + "`" + ` (Expiration Time) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.NumericDate"
+                        }
+                    ]
+                },
+                "iat": {
+                    "description": "the ` + "`" + `iat` + "`" + ` (Issued At) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.NumericDate"
+                        }
+                    ]
+                },
+                "iss": {
+                    "type": "string"
+                },
+                "jti": {
+                    "description": "the ` + "`" + `jti` + "`" + ` (JWT ID) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7",
+                    "type": "string"
+                },
+                "level": {
+                    "$ref": "#/definitions/domain.Level"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nbf": {
+                    "description": "the ` + "`" + `nbf` + "`" + ` (Not Before) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.NumericDate"
+                        }
+                    ]
+                },
+                "sub": {
+                    "description": "the ` + "`" + `sub` + "`" + ` (Subject) claim. See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2",
+                    "type": "string"
+                }
+            }
+        },
         "domain.FlowType": {
             "type": "string",
             "enum": [
@@ -297,17 +410,41 @@ const docTemplate = `{
                 "RememberMeFlow"
             ]
         },
+        "domain.Level": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "user",
+                "anonymous"
+            ],
+            "x-enum-varnames": [
+                "AdminLevel",
+                "UserLevel",
+                "AnonymousLevel"
+            ]
+        },
+        "domain.NumericDate": {
+            "type": "object",
+            "properties": {
+                "time.Time": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Tokens": {
             "type": "object",
             "properties": {
                 "accessToken": {
                     "type": "string"
                 },
-                "expiresIn": {
+                "accessTokenExpiration": {
                     "type": "integer"
                 },
                 "refreshToken": {
                     "type": "string"
+                },
+                "refreshTokenExpiration": {
+                    "type": "integer"
                 }
             }
         },
@@ -361,6 +498,18 @@ const docTemplate = `{
             "properties": {
                 "refreshToken": {
                     "type": "string"
+                }
+            }
+        },
+        "router.response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "response": {},
+                "statusCode": {
+                    "type": "integer"
                 }
             }
         },

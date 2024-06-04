@@ -14,16 +14,17 @@ type Authenticator interface {
 	// Refresh refreshes an user authentication tokens.
 	Refresh(refreshToken string) (*Tokens, error)
 	// ValidateAccessToken checks if logged-in user authentication token is valid.
-	ValidateAccessToken(accessToken string) error
+	ValidateAccessToken(accessToken string) (*Claims, error)
 	// JWTKey returns the authenticator JWT Keys.
 	JWTKey() *rsa.PrivateKey
 }
 
 // Tokens represents the authentication token json response.
 type Tokens struct {
-	RefreshToken string `json:"refreshToken,omitempty"`
-	AccessToken  string `json:"accessToken"`
-	ExpiresIn    int64  `json:"expiresIn"`
+	RefreshToken           string `json:"refreshToken,omitempty"`
+	AccessToken            string `json:"accessToken"`
+	AccessTokenExpiration  int64  `json:"accessTokenExpiration"`
+	RefreshTokenExpiration int64  `json:"refreshTokenExpiration,omitempty"`
 }
 
 // FlowType represents login flow type.

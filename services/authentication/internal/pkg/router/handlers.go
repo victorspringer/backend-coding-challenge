@@ -22,9 +22,9 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // @Tags authentication
 // @Accept json
 // @Produce json
-// @Success 200 {object} domain.Tokens
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 500 {string} string "Internal Server Error"
+// @Success 200 {object} response{response=domain.Tokens}
+// @Failure 401 {object} response
+// @Failure 500 {object} response
 // @Router /anonymous [post]
 func (rt *router) loginAnonymous(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -50,10 +50,10 @@ func (rt *router) loginAnonymous(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param loginPayload body loginPayload true "Login payload"
-// @Success 200 {object} domain.Tokens
-// @Failure 400 {string} string "Bad Request"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 500 {string} string "Internal Server Error"
+// @Success 200 {object} response{response=domain.Tokens}
+// @Failure 400 {object} response
+// @Failure 401 {object} response
+// @Failure 500 {object} response
 // @Router /login [post]
 func (rt *router) login(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -94,10 +94,10 @@ func (rt *router) login(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param refreshPayload body refreshPayload true "Refresh payload"
-// @Success 200 {object} domain.Tokens
-// @Failure 400 {string} string "Bad Request"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 500 {string} string "Internal Server Error"
+// @Success 200 {object} response{response=domain.Tokens}
+// @Failure 400 {object} response
+// @Failure 401 {object} response
+// @Failure 500 {object} response
 // @Router /refresh [post]
 func (rt *router) refresh(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -138,10 +138,10 @@ func (rt *router) refresh(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param Authorization header string true "Authorization header with Bearer token"
-// @Success 200 {string} string "OK"
-// @Failure 400 {string} string "Bad Request"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 500 {string} string "Internal Server Error"
+// @Success 200 {object} response
+// @Failure 400 {object} response
+// @Failure 401 {object} response
+// @Failure 500 {object} response
 // @Router /logout [post]
 func (rt *router) logout(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -173,10 +173,10 @@ func (rt *router) logout(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param validationPayload body validationPayload true "Validation payload"
-// @Success 200 {string} string "OK"
-// @Failure 400 {string} string "Bad Request"
-// @Failure 401 {string} string "Unauthorized"
-// @Failure 500 {string} string "Internal Server Error"
+// @Success 200 {object} response{response=domain.Claims}
+// @Failure 400 {object} response
+// @Failure 401 {object} response
+// @Failure 500 {object} response
 // @Router /validate [post]
 func (rt *router) validateAccessToken(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -197,7 +197,8 @@ func (rt *router) validateAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = rt.authenticator.ValidateAccessToken(body.AccessToken); err != nil {
+	claims, err := rt.authenticator.ValidateAccessToken(body.AccessToken)
+	if err != nil {
 		rt.logger.Debug("invalid access token", log.Error(err), log.String("requestId", getRequestID(ctx)))
 		if err == domain.ErrUnauthorized {
 			rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
@@ -207,7 +208,7 @@ func (rt *router) validateAccessToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rt.respond(w, r, http.StatusText(http.StatusOK), http.StatusOK)
+	rt.respond(w, r, claims, http.StatusOK)
 }
 
 // @Summary JSON Web Key Set
@@ -215,7 +216,7 @@ func (rt *router) validateAccessToken(w http.ResponseWriter, r *http.Request) {
 // @Tags authentication
 // @Accept json
 // @Produce json
-// @Success 200 {object} jwks
+// @Success 200 {object} response{response=jwks}
 // @Router /.well-known/jwks.json [get]
 func (rt *router) jwks(w http.ResponseWriter, r *http.Request) {
 	bigExp := big.NewInt(int64(rt.authenticator.JWTKey().PublicKey.E))
