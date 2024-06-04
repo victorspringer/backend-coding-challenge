@@ -357,11 +357,11 @@ func (c *Client) Refresh(refreshToken string) (*Tokens, error) {
 }
 
 // ValidateAccessToken checks if logged-in user authentication token exists.
-func (c *Client) ValidateAccessToken(accessToken string) (*Claims, error) {
+func (c *Client) ValidateAccessToken(accessToken string) error {
 	claims, err := c.decryptAccessToken(accessToken)
 	if err != nil {
 		c.logger.Warn("failed to decrypt access token", log.String("access_token", accessToken), log.Error(err))
-		return nil, ErrUnauthorized
+		return ErrUnauthorized
 	}
 
 	ctx := context.Background()
@@ -370,16 +370,16 @@ func (c *Client) ValidateAccessToken(accessToken string) (*Claims, error) {
 	refreshToken, err := c.refreshTokenRepository.Get(ctx, refreshTokenKey)
 	if err != nil {
 		c.logger.Debug("failed to get from refresh token repository", log.String("key", refreshTokenKey), log.Error(err))
-		return nil, ErrUnauthorized
+		return ErrUnauthorized
 	}
 
 	_, err = c.accessTokenRepository.Get(ctx, refreshToken)
 	if err != nil {
 		c.logger.Debug("failed to get from access token repository", log.String("key", refreshToken), log.Error(err))
-		return nil, ErrUnauthorized
+		return ErrUnauthorized
 	}
 
-	return claims, nil
+	return nil
 }
 
 func (c *Client) decryptAccessToken(accessToken string) (*Claims, error) {
