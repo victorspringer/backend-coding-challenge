@@ -1,4 +1,4 @@
-module github.com/victorspringer/backend-coding-challenge/lib
+module github.com/victorspringer/backend-coding-challenge/lib/log
 
 go 1.22.3
 
