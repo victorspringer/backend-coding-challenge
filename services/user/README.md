@@ -14,6 +14,10 @@ This Golang service handles Users creation and visualization for the Movie Ratin
 3. Run the service using `make run`.
 4. To run the unit tests, use `make test`.
 
+## Features
+
+- Light speed in-memory cache.
+
 ## Technologies Used
 
 - Golang
