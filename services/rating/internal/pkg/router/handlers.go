@@ -18,6 +18,8 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // @Summary Find ratings by user ID
 // @Description Get all ratings given by a specific user
 // @Tags ratings
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Insert your access token"
 // @Param id path string true "User ID"
 // @Produce json
 // @Success 200 {object} response{response=[]domain.Rating}
@@ -47,6 +49,8 @@ func (rt *router) findByUserHandler(w http.ResponseWriter, r *http.Request) {
 // @Summary Find ratings by movie ID
 // @Description Get all ratings for a specific movie
 // @Tags ratings
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Insert your access token"
 // @Param id path string true "Movie ID"
 // @Produce json
 // @Success 200 {object} response{response=[]domain.Rating}
@@ -76,6 +80,8 @@ func (rt *router) findByMovieHandler(w http.ResponseWriter, r *http.Request) {
 // @Summary Create a new (or override an old) rating
 // @Description Create a new (or override an old) rating for a movie by a user
 // @Tags ratings
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Insert your access token"
 // @Accept json
 // @Produce json
 // @Param rating body upsertPayload true "Rating"

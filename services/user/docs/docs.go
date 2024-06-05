@@ -137,6 +137,11 @@ const docTemplate = `{
         },
         "/{username}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user information by username",
                 "produces": [
                     "application/json"
@@ -149,6 +154,13 @@ const docTemplate = `{
                         "description": "Username of the user",
                         "name": "username",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],

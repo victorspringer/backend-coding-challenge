@@ -22,6 +22,11 @@ const docTemplate = `{
     "paths": {
         "/create": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new movie",
                 "consumes": [
                     "application/json"
@@ -32,6 +37,13 @@ const docTemplate = `{
                 "summary": "Create a new movie",
                 "operationId": "create-movie",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Movie object to be created",
                         "name": "movie",
@@ -84,6 +96,11 @@ const docTemplate = `{
         },
         "/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get movie information by ID",
                 "produces": [
                     "application/json"
@@ -96,6 +113,13 @@ const docTemplate = `{
                         "description": "ID of the movie",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],

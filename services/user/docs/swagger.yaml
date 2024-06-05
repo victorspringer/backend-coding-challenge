@@ -65,6 +65,11 @@ paths:
         name: username
         required: true
         type: string
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -89,6 +94,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/router.response'
+      security:
+      - ApiKeyAuth: []
       summary: Get user by username
   /create:
     post:

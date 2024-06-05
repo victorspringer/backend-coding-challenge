@@ -60,6 +60,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -84,6 +89,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/router.response'
+      security:
+      - ApiKeyAuth: []
       summary: Get movie by ID
   /create:
     post:
@@ -92,6 +99,11 @@ paths:
       description: Create a new movie
       operationId: create-movie
       parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Movie object to be created
         in: body
         name: movie
@@ -122,5 +134,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/router.response'
+      security:
+      - ApiKeyAuth: []
       summary: Create a new movie
 swagger: "2.0"

@@ -131,6 +131,11 @@
         },
         "/{username}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get user information by username",
                 "produces": [
                     "application/json"
@@ -143,6 +148,13 @@
                         "description": "Username of the user",
                         "name": "username",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],

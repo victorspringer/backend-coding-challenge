@@ -19,6 +19,8 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Get user information by username
 // @ID get-user-by-username
 // @Param username path string true "Username of the user"
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Insert your access token"
 // @Produce json
 // @Success 200 {object} response{response=domain.User}
 // @Failure 401 {object} response

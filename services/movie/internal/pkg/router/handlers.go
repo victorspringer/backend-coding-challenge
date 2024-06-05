@@ -19,6 +19,8 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // @Description Get movie information by ID
 // @ID get-movie-by-id
 // @Param id path string true "ID of the movie"
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Insert your access token"
 // @Produce json
 // @Success 200 {object} response{response=domain.Movie}
 // @Failure 401 {object} response
@@ -48,6 +50,8 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 // @Summary Create a new movie
 // @Description Create a new movie
 // @ID create-movie
+// @Security ApiKeyAuth
+// @Param Authorization header string true "Insert your access token"
 // @Accept json
 // @Produce json
 // @Param movie body createPayload true "Movie object to be created"

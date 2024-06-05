@@ -22,6 +22,11 @@ const docTemplate = `{
     "paths": {
         "/movie/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get all ratings for a specific movie",
                 "produces": [
                     "application/json"
@@ -31,6 +36,13 @@ const docTemplate = `{
                 ],
                 "summary": "Find ratings by movie ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Movie ID",
@@ -78,6 +90,11 @@ const docTemplate = `{
         },
         "/upsert": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new (or override an old) rating for a movie by a user",
                 "consumes": [
                     "application/json"
@@ -90,6 +107,13 @@ const docTemplate = `{
                 ],
                 "summary": "Create a new (or override an old) rating",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Rating",
                         "name": "rating",
@@ -142,6 +166,11 @@ const docTemplate = `{
         },
         "/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Get all ratings given by a specific user",
                 "produces": [
                     "application/json"
@@ -151,6 +180,13 @@ const docTemplate = `{
                 ],
                 "summary": "Find ratings by user ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "User ID",

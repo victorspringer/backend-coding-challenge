@@ -46,6 +46,11 @@ paths:
     get:
       description: Get all ratings for a specific movie
       parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Movie ID
         in: path
         name: id
@@ -73,6 +78,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/router.response'
+      security:
+      - ApiKeyAuth: []
       summary: Find ratings by movie ID
       tags:
       - ratings
@@ -82,6 +89,11 @@ paths:
       - application/json
       description: Create a new (or override an old) rating for a movie by a user
       parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Rating
         in: body
         name: rating
@@ -112,6 +124,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/router.response'
+      security:
+      - ApiKeyAuth: []
       summary: Create a new (or override an old) rating
       tags:
       - ratings
@@ -119,6 +133,11 @@ paths:
     get:
       description: Get all ratings given by a specific user
       parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: User ID
         in: path
         name: id
@@ -146,6 +165,8 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/router.response'
+      security:
+      - ApiKeyAuth: []
       summary: Find ratings by user ID
       tags:
       - ratings
