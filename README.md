@@ -13,6 +13,7 @@ Each system component (service or client) is documented in its respective reposi
 - ### 👤 User Service [repository](services/user)
 - ### ⭐ Rating Service [repository](services/rating)
 - ### 🎥 Movie Service [repository](services/movie)
+- ### 🔑 Authentication Service [repository](services/authentication)
 - ### 💻 Client [repository](client)
 
 ## 🏃 How to run
