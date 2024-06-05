@@ -17,6 +17,7 @@ This Golang service handles user authentication and authorization for the Movie 
 
 - User authentication with JWT tokens.
 - Authorization mechanisms for accessing protected endpoints.
+- The HTTP middleware that handles authorization accepts both Authorization Bearer header and Cookies (`MRSAccessToken` and `MRSRefreshToken`)
 
 ## Technologies Used
 
