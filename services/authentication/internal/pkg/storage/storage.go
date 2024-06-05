@@ -18,7 +18,7 @@ type redisRepository struct {
 	redisReaderClient  *redis.Client
 }
 
-// NewRedisRepository returns a new instance of auth redisRepository.
+// NewRedisRepository returns a new instance of the Redis repository.
 func NewRedisRepository(redisPrefix string, redisPrimaryClient, redisReaderClient *redis.Client) domain.Repository {
 	return &redisRepository{
 		redisPrefix:        redisPrefix,
@@ -27,6 +27,7 @@ func NewRedisRepository(redisPrefix string, redisPrimaryClient, redisReaderClien
 	}
 }
 
+// Keys retrieves keys matching the specified pattern.
 func (r *redisRepository) Keys(ctx context.Context, pattern string) ([]string, error) {
 	var (
 		keys   []string = make([]string, 0)
@@ -60,6 +61,7 @@ func (r *redisRepository) Keys(ctx context.Context, pattern string) ([]string, e
 	return keys, nil
 }
 
+// Get retrieves the value associated with the specified key.
 func (r *redisRepository) Get(ctx context.Context, key string) (string, error) {
 	value, err := r.redisReaderClient.Get(ctx, r.redisPrefix+key).Result()
 	if err != nil {
@@ -74,10 +76,12 @@ func (r *redisRepository) Get(ctx context.Context, key string) (string, error) {
 	return value, nil
 }
 
+// Set sets the value associated with the specified key with an optional expiration duration.
 func (r *redisRepository) Set(ctx context.Context, key, value string, expiration time.Duration) error {
 	return r.redisPrimaryClient.Set(ctx, r.redisPrefix+key, value, expiration).Err()
 }
 
+// Del deletes the value associated with the specified key.
 func (r *redisRepository) Del(ctx context.Context, key string) error {
 	err := r.redisPrimaryClient.Del(ctx, r.redisPrefix+key).Err()
 	if err != nil {

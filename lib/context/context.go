@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// ContextKey is a custom type for context keys.
 type ContextKey string
 
 var (
@@ -14,6 +15,7 @@ var (
 	CTX_USER_USERNAME ContextKey = "userUsername"
 )
 
+// GetRequestID retrieves the request ID from the context.
 func GetRequestID(ctx context.Context) string {
 	requestID, ok := ctx.Value(CTX_REQUEST_ID).(string)
 	if !ok {
@@ -22,6 +24,7 @@ func GetRequestID(ctx context.Context) string {
 	return requestID
 }
 
+// GetUserLevel retrieves the user's access level from the context.
 func GetUserLevel(ctx context.Context) string {
 	if level, ok := ctx.Value(CTX_USER_LEVEL).(string); ok {
 		return level
@@ -29,6 +32,7 @@ func GetUserLevel(ctx context.Context) string {
 	return "anonymous"
 }
 
+// GetUserUsername retrieves the user's username from the context.
 func GetUserUsername(ctx context.Context) string {
 	if username, ok := ctx.Value(CTX_USER_USERNAME).(string); ok {
 		return username

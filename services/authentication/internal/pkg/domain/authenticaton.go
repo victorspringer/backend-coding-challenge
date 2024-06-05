@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 )
 
+// Authenticator is the interface for the authentication methods.
 type Authenticator interface {
 	// GenerateAnonymousTokens generate authentication tokens for anonymous user.
 	GenerateAnonymousTokens(userID string, flow FlowType) (*Tokens, error)
@@ -13,7 +14,7 @@ type Authenticator interface {
 	Revoke(accessToken string) error
 	// Refresh refreshes an user authentication tokens.
 	Refresh(refreshToken string) (*Tokens, error)
-	// ValidateAccessToken checks if logged-in user authentication token is valid.
+	// ValidateAccessToken checks if logged-in user authentication token exists.
 	ValidateAccessToken(accessToken string) (*Claims, error)
 	// JWTKey returns the authenticator JWT Keys.
 	JWTKey() *rsa.PrivateKey

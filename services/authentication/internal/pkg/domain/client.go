@@ -31,7 +31,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// Level represents level field type for claims data structure.
+// Level represents the user's access level.
 type Level string
 
 // Valid Level values as constants.
@@ -78,6 +78,7 @@ func NewClient(
 	}
 }
 
+// GenerateAnonymousTokens generate authentication tokens for anonymous user.
 func (c *Client) GenerateAnonymousTokens(userID string, flow FlowType) (*Tokens, error) {
 	claims := &Claims{
 		Level: AnonymousLevel,
@@ -88,6 +89,7 @@ func (c *Client) GenerateAnonymousTokens(userID string, flow FlowType) (*Tokens,
 	return c.generateTokens(claims, flow)
 }
 
+// GenerateUserTokens generate authentication tokens for logged-in user.
 func (c *Client) GenerateUserTokens(username, password string, flow FlowType) (*Tokens, error) {
 	user, err := c.userServiceClient.CheckCredentials(username, password)
 	if err != nil {

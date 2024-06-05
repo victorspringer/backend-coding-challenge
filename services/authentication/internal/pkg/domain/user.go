@@ -12,14 +12,16 @@ import (
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
 )
 
-// User entity.
+// User represents a user entity.
 type User struct {
 	Username string `json:"username"`
 	Name     string `json:"name"`
 	Level    Level  `json:"level"`
 }
 
+// UserServiceClient is an interface for interacting with the user service.
 type UserServiceClient interface {
+	// CheckCredentials checks the credentials of a user.
 	CheckCredentials(username, md5Password string) (*User, error)
 }
 
@@ -43,16 +45,18 @@ type userResponse struct {
 	Response User `json:"response"`
 }
 
+// NewUserServiceClient creates a new instance of the user service client.
 func NewUserServiceClient(timeout time.Duration, endpoint string, logger *log.Logger) UserServiceClient {
 	return &userServiceClient{
-		&http.Client{
+		httpClient: &http.Client{
 			Timeout: timeout,
 		},
-		endpoint,
-		logger,
+		userServiceEndpoint: endpoint,
+		logger:              logger,
 	}
 }
 
+// CheckCredentials checks the credentials of a user using the user service.
 func (c *userServiceClient) CheckCredentials(username, md5Password string) (*User, error) {
 	p := payload{username, md5Password}
 	b, err := json.Marshal(p)
