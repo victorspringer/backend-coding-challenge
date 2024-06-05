@@ -18,12 +18,15 @@
     "@mui/material": "latest",
     "@mui/material-nextjs": "latest",
     "@svgr/webpack": "^8.1.0",
+    "cookie": "^0.6.0",
     "isomorphic-fetch": "^3.0.0",
+    "js-md5": "^0.8.3",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/cookie": "^0.6.0",
     "@types/isomorphic-fetch": "^0.0.39",
     "@types/node": "latest",
     "@types/react": "latest",

@@ -11,8 +11,20 @@ import Box from '@mui/material/Box';
 import '../public/styles/theme.css';
 import Footer from '../src/components/Footer';
 
+const showNavigation = (pathname: string): boolean => {
+  switch (pathname) {
+    case "/":
+    case "/profile/[username]":
+    case "/movies":
+    case "/users":
+      return true;
+  }
+  return false;
+};
+
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
+  
   return (
     <AppCacheProvider {...props}>
       <Head>
@@ -21,7 +33,7 @@ export default function MyApp(props: AppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Navigation />
+        {showNavigation(props.router.pathname) && <Navigation />}
         <Container maxWidth="xl">
           <Box
             sx={{

@@ -7,6 +7,7 @@ import theme from '../../src/theme';
 import StarIcon from '@mui/icons-material/Star';
 import Error from '../../src/components/Error';
 import CircularProgress from '@mui/material/CircularProgress';
+import cookie from 'cookie';
 
 type User = {
     id: string;
@@ -29,7 +30,7 @@ type Movie = {
 };
 
 type Props = {
-    loggedInUser?: User;
+    accessToken: string;
     user?: User;
     ratings?: Rating[];
     error?: Error;
@@ -40,79 +41,96 @@ type Error = {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+    const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : null;
+    const isAuthenticated = cookies && cookies["MRSAccessToken"];
+
+    if (!isAuthenticated) {
+        return {
+            redirect: {
+                destination: '/signin',
+                permanent: false,
+            },
+        };
+    };
+
     const { username } = query;
+    const accessToken = cookies["MRSAccessToken"];
+    
+    let props: Props = { accessToken };
 
-    let props: Props = {};
+    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/user/${username}`, {
+        method: 'POST',
+        body: JSON.stringify({accessToken}),
+    });
+    const userData = await userResponse.json();
 
-    try {
-        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_USER_SERVICE_URL}/${username}`);
-        const userData = await userResponse.json();
-
-        if (userData.error) {
-            console.log(userData.error);
-            props.error = { code: userData.statusCode }
-            return { props }
-        }
-
-        props.user = userData.response;
-
-        const ratingsResponse = await fetch(`${process.env.NEXT_PUBLIC_RATING_SERVICE_URL}/user/${username}`);
-        const ratingsData = await ratingsResponse.json();
-
-        if (ratingsData.error) {
-            console.log(ratingsData.error);
-            return { props }
-        }
-
-        const ratings = await Promise.all(
-            ratingsData.response.map(async (rating: any) => {
-                const movieResponse = await fetch(`${process.env.NEXT_PUBLIC_MOVIE_SERVICE_URL}/${rating.movieId}`);
-                const movieData = await movieResponse.json();
-
-                if (movieData.error) {
-                    console.log(movieData.error);
-                    return null;
-                }
-
-                return {
-                    user: userData.response,
-                    movie: movieData.response,
-                    value: rating.value,
-                };
-            }).filter((rating: Rating) => rating !== null)
-        );
-
-        props.ratings = ratings;
-    } catch (error) {
-        console.log(error);
-        props.error = { code: 500 }
+    if (userData.error) {
+        console.log(userData.error);
+        props.error = { code: userData.statusCode }
+        return { props }
     }
+
+    props.user = userData.response;
+
+    const ratingsResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/rating/${username}`, {
+        method: 'POST',
+        body: JSON.stringify({accessToken}),
+    });
+    
+    const ratingsData = await ratingsResponse.json()
+
+    if (ratingsData.error) {
+        return { props }
+    }
+
+    const ratings = await Promise.all(
+        ratingsData.response.map(async (rating: any) => {
+            const movieResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/movie/${rating.movieId}`, {
+                method: 'POST',
+                body: JSON.stringify({accessToken}),
+            });
+
+            const movieData = await movieResponse.json();
+
+            if (movieData.error) {
+                console.log(movieData.error);
+                return null;
+            }
+
+            return {
+                user: userData.response,
+                movie: movieData.response,
+                value: rating.value,
+            };
+        }).filter((rating: Rating) => rating !== null)
+    );
+
+    props.ratings = ratings;
 
     return { props };
 };
 
-const updateRating = async (value: number, rating?: Rating) => {
+const updateRating = async (accessToken: string, value: number, rating?: Rating) => {
     if (!rating) return;
 
-    try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_RATING_SERVICE_URL}/upsert`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                userId: rating.user.id,
-                movieId: rating.movie.id,
-                value,
-            }),
-        });
-    
-        const result = await response.json();
-        if (result.error) {
-            console.log(result.error);
-        }
-    } catch (error) {
-        console.log(error);
+    const response = await fetch('/api/updateRating', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            accessToken: accessToken,
+            userId: rating.user.id,
+            movieId: rating.movie.id,
+            value,
+        }),
+    });
+
+    if (response.ok) {
+        return null;
+    } else {
+        const data = await response.json();
+        return data.statusCode;
     }
 };
 
@@ -129,7 +147,7 @@ const labels: { [index: string]: string } = {
     5: 'Masterpiece',
 };
 
-export default function Profile({ user, ratings, error }: Props) {
+export default function Profile({ accessToken, user, ratings, error }: Props) {
     if (error) {
         return <Error code={error.code} />;
     }
@@ -152,7 +170,7 @@ export default function Profile({ user, ratings, error }: Props) {
             const newValues = [...values];
             newValues[index] = newValue;
             setValues(newValues);
-            await updateRating(newValue, ratings ? ratings[index] : undefined);
+            error = await updateRating(accessToken, newValue, ratings ? ratings[index] : undefined);
         }
     };
 

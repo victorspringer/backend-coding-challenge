@@ -18,7 +18,6 @@ import Logo from '../../public/svg/logo.svg';
 import Link from 'next/link';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import theme from '../theme';
-import { useRouter } from 'next/router';
 
 const pages = [
   { 'title': 'Movies', 'path': '/movies' },

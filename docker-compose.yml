@@ -8,6 +8,7 @@ services:
       - ENVIRONMENT=docker-compose
     depends_on:
       - mongo1
+      - authentication
 
   rating:
     build:
@@ -18,6 +19,7 @@ services:
       - ENVIRONMENT=docker-compose
     depends_on:
       - mongo2
+      - authentication
 
   movie:
     build:
@@ -28,6 +30,17 @@ services:
       - ENVIRONMENT=docker-compose
     depends_on:
       - mongo3
+      - authentication
+
+  authentication:
+    build:
+      context: ./services/authentication
+    ports:
+      - "8084:8084"
+    environment:
+      - ENVIRONMENT=docker-compose
+    depends_on:
+      - redis
 
   client:
     build:
@@ -35,13 +48,16 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_USER_SERVICE_URL=http://localhost:8081
-      - NEXT_PUBLIC_RATING_SERVICE_URL=http://localhost:8082
-      - NEXT_PUBLIC_MOVIE_SERVICE_URL=http://localhost:8083
+      - NEXT_PUBLIC_USER_SERVICE_URL=http://user:8081
+      - NEXT_PUBLIC_RATING_SERVICE_URL=http://rating:8082
+      - NEXT_PUBLIC_MOVIE_SERVICE_URL=http://movie:8083
+      - NEXT_PUBLIC_AUTH_SERVICE_URL=http://authentication:8084
+      - NEXT_PUBLIC_WEBAPP_URL=http://client:3000
     depends_on:
       - user
       - rating
       - movie
+      - authentication
 
   mongo1:
     image: mongo:latest
@@ -66,6 +82,11 @@ services:
     command: mongod --quiet --logpath /dev/null
     volumes:
       - mongo3data:/data/db
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
 
 volumes:
   mongo1data:
