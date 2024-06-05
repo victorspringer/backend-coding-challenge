@@ -25,11 +25,11 @@ make compose
 ```
 This command will spin up all the containerized components.
 
-**2. See the [documentations](#-documentations) to learn how to start each service or client independently. For the databases, either you run your own instances of [MongoDB](https://www.mongodb.com/) or just run:**
+**2. See the [documentations](#-documentations) to learn how to start each service or client independently. For the databases, either you run your own instances of [MongoDB](https://www.mongodb.com/) and [Redis](https://redis.io/) or just run:**
 ```bash
 make run-db
 ```
-This command will spin up all the 3 MongoDB containers.
+This command will spin up all the 3 MongoDB and one Redis containers.
 
 ### Database migration
 
@@ -54,8 +54,16 @@ The dataset used in this task is provided by [TMDB](https://www.themoviedb.org/)
 
 ## ✨ Bonus Points
 
-- [ ] Implement authentication and authorization mechanisms for users.
+- [x] Implement authentication and authorization mechanisms for users.
 - [x] Provide documentation for your API endpoints using tools like Swagger.
 - [x] Implement logging to record errors and debug information.
 - [x] Implement caching mechanisms to improve the rating system's performance.
 - [ ] Implement CI/CD quality gates.
+
+## 🌄 Future Improvements
+
+  - Update/delete/list User endpoints
+  - Update/delete/list Movie endpoints
+  - Monitoring/observability
+  - GraphQL
+  - Production-ready WebApp
