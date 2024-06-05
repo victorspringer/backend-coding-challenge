@@ -2,16 +2,26 @@ module github.com/victorspringer/backend-coding-challenge/services/user
 
 go 1.22.3
 
+replace github.com/victorspringer/backend-coding-challenge/lib/context v0.0.0 => ../../lib/context
+
+replace github.com/victorspringer/backend-coding-challenge/lib/image v0.0.0 => ../../lib/image
+
+replace github.com/victorspringer/backend-coding-challenge/lib/log v0.0.0 => ../../lib/log
+
+replace github.com/victorspringer/backend-coding-challenge/services/authentication v0.0.0 => ../authentication
+
 require (
-	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
-	github.com/google/uuid v1.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.3
-	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240603145055-da615b198e2b
+	github.com/victorspringer/backend-coding-challenge/lib/context v0.0.0
+	github.com/victorspringer/backend-coding-challenge/lib/image v0.0.0
+	github.com/victorspringer/backend-coding-challenge/lib/log v0.0.0
+	github.com/victorspringer/backend-coding-challenge/services/authentication v0.0.0
 	github.com/victorspringer/http-cache v0.0.0-20240523143319-7d9f48f8ab91
 	go.mongodb.org/mongo-driver v1.15.0
 )
@@ -24,7 +34,9 @@ require (
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.2 // indirect

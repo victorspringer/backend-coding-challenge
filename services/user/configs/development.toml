@@ -12,3 +12,7 @@ uri = "mongodb://localhost:27017/userdb"
 db_name = "userdb"
 collection = "users"
 timeout = 4 # seconds
+
+[authentication_service]
+url = "http://localhost:8084"
+timeout = 4 # seconds

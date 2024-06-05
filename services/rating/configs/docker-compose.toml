@@ -12,3 +12,7 @@ uri = "mongodb://mongo2:27017/ratingdb"
 db_name = "ratingdb"
 collection = "ratings"
 timeout = 4 # seconds
+
+[authentication_service]
+url = "http://authentication:8084"
+timeout = 4 # seconds

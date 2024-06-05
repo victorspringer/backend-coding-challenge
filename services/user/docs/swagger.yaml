@@ -6,6 +6,8 @@ definitions:
         type: string
       id:
         type: string
+      level:
+        type: string
       name:
         type: string
       password:
@@ -24,6 +26,13 @@ definitions:
       name:
         type: string
       picture:
+        type: string
+      username:
+        type: string
+    type: object
+  router.credentialsPayload:
+    properties:
+      md5Password:
         type: string
       username:
         type: string
@@ -68,6 +77,10 @@ paths:
                 response:
                   $ref: '#/definitions/domain.User'
               type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/router.response'
         "404":
           description: Not Found
           schema:
@@ -86,7 +99,7 @@ paths:
       parameters:
       - description: User object to be created
         in: body
-        name: username
+        name: user
         required: true
         schema:
           $ref: '#/definitions/router.createPayload'
@@ -111,4 +124,40 @@ paths:
           schema:
             $ref: '#/definitions/router.response'
       summary: Create a new user
+  /credentials:
+    post:
+      description: Get user information by username and password
+      operationId: get-user-by-credentials
+      parameters:
+      - description: User object to be found
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/router.credentialsPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/router.response'
+            - properties:
+                response:
+                  $ref: '#/definitions/domain.User'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/router.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response'
+      summary: Get user by credentials (username and password)
 swagger: "2.0"

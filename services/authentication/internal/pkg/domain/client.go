@@ -55,7 +55,7 @@ var (
 	ErrUnauthorized  = errors.New("unauthorized")
 )
 
-// NewClientSingleton returns a new instance of authentication Client.
+// NewClient returns a new instance of authentication Client.
 func NewClient(
 	logger *log.Logger,
 	userServiceClient UserServiceClient,
@@ -100,7 +100,7 @@ func (c *Client) GenerateUserTokens(username, password string, flow FlowType) (*
 	}
 
 	claims := &Claims{
-		Level: Level(user.Level),
+		Level: user.Level,
 		Name:  user.Name,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Subject: username,

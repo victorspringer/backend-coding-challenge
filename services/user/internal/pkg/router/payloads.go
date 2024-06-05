@@ -6,3 +6,8 @@ type createPayload struct {
 	Name        string `json:"name"`
 	Picture     string `json:"picture"`
 }
+
+type credentialsPayload struct {
+	Username    string `json:"username"`
+	MD5Password string `json:"md5Password"`
+}

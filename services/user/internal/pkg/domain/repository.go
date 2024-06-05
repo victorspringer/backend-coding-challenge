@@ -8,6 +8,8 @@ type Repository interface {
 	Create(ctx context.Context, user *ValidatedUser) (*User, error)
 	// FindById retrieves an User by a given unique ID.
 	FindByID(ctx context.Context, id string) (*User, error)
+	// FindById retrieves an User by a given unique ID.
+	FindByCredentials(ctx context.Context, id string, password string) (*User, error)
 	// Close disconnects the database connection pool.
 	Close(ctx context.Context) error
 }

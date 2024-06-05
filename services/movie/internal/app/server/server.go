@@ -10,6 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
+	authClient "github.com/victorspringer/backend-coding-challenge/services/authentication/pkg/client"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/config"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/database"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/router"
@@ -41,9 +42,15 @@ func Init(ctx context.Context, cfg *config.Config, logger *log.Logger) error {
 
 	logger.Debug("database connected")
 
+	ac := authClient.NewClient(
+		cfg.AuthenticationService.URL,
+		cfg.AuthenticationService.Timeout*time.Second,
+		logger,
+	)
+
 	server := http.Server{
 		Addr:         cfg.MovieService.Server.Port,
-		Handler:      router.New(db, logger).GetHandler(),
+		Handler:      router.New(db, logger, ac).GetHandler(),
 		ReadTimeout:  cfg.MovieService.Server.ReadTimeout * time.Second,
 		WriteTimeout: cfg.MovieService.Server.WriteTimeout * time.Second,
 		IdleTimeout:  cfg.MovieService.Server.IdleTimeout * time.Second,

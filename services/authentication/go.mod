@@ -2,8 +2,12 @@ module github.com/victorspringer/backend-coding-challenge/services/authenticatio
 
 go 1.22.3
 
+replace github.com/victorspringer/backend-coding-challenge/lib/context v0.0.0 => ../../lib/context
+
+replace github.com/victorspringer/backend-coding-challenge/lib/log v0.0.0 => ../../lib/log
+
 require (
-	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.6.0
@@ -12,7 +16,8 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.3
-	github.com/victorspringer/backend-coding-challenge/lib v0.0.0-20240604041956-2021422838c6
+	github.com/victorspringer/backend-coding-challenge/lib/context v0.0.0
+	github.com/victorspringer/backend-coding-challenge/lib/log v0.0.0
 )
 
 require (

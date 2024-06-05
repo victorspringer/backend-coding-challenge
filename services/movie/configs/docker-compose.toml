@@ -12,3 +12,7 @@ uri = "mongodb://mongo3:27017/moviedb"
 db_name = "moviedb"
 collection = "movies"
 timeout = 4 # seconds
+
+[authentication_service]
+url = "http://authentication:8084"
+timeout = 4 # seconds

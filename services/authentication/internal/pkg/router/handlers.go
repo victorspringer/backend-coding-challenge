@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/victorspringer/backend-coding-challenge/lib/context"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/authentication/internal/pkg/domain"
 )
@@ -32,7 +33,7 @@ func (rt *router) loginAnonymous(w http.ResponseWriter, r *http.Request) {
 	userID := uuid.New().String()
 	tokens, err := rt.authenticator.GenerateAnonymousTokens(userID, domain.WebsiteSessionFlow)
 	if err != nil {
-		rt.logger.Info("failed to generate anonymous tokens", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Info("failed to generate anonymous tokens", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		if err == domain.ErrUnauthorized {
 			rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
@@ -40,6 +41,21 @@ func (rt *router) loginAnonymous(w http.ResponseWriter, r *http.Request) {
 		rt.respond(w, r, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	isSecure := r.Header.Get("X-Forwarded-Proto") == "https"
+	http.SetCookie(w, &http.Cookie{
+		Name:     "MRSAccessToken",
+		Value:    tokens.AccessToken,
+		HttpOnly: true,
+		Secure:   isSecure,
+		Path:     "/",
+		MaxAge:   int(tokens.AccessTokenExpiration),
+		SameSite: http.SameSiteLaxMode,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:   "MRSRefreshToken",
+		MaxAge: -1,
+	})
 
 	rt.respond(w, r, tokens, http.StatusOK)
 }
@@ -61,7 +77,7 @@ func (rt *router) login(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -69,14 +85,14 @@ func (rt *router) login(w http.ResponseWriter, r *http.Request) {
 	body := &loginPayload{}
 	err = json.Unmarshal(b, body)
 	if err != nil {
-		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	tokens, err := rt.authenticator.GenerateUserTokens(body.Username, body.MD5Password, body.Flow)
 	if err != nil {
-		rt.logger.Error("failed to generate user tokens", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to generate user tokens", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		if err == domain.ErrUnauthorized {
 			rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
@@ -84,6 +100,26 @@ func (rt *router) login(w http.ResponseWriter, r *http.Request) {
 		rt.respond(w, r, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	isSecure := r.Header.Get("X-Forwarded-Proto") == "https"
+	http.SetCookie(w, &http.Cookie{
+		Name:     "MRSAccessToken",
+		Value:    tokens.AccessToken,
+		HttpOnly: true,
+		Secure:   isSecure,
+		Path:     "/",
+		MaxAge:   int(tokens.AccessTokenExpiration),
+		SameSite: http.SameSiteLaxMode,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "MRSRefreshToken",
+		Value:    tokens.RefreshToken,
+		HttpOnly: true,
+		Secure:   isSecure,
+		Path:     "/",
+		MaxAge:   int(tokens.RefreshTokenExpiration),
+		SameSite: http.SameSiteLaxMode,
+	})
 
 	rt.respond(w, r, tokens, http.StatusOK)
 }
@@ -105,7 +141,7 @@ func (rt *router) refresh(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -113,14 +149,14 @@ func (rt *router) refresh(w http.ResponseWriter, r *http.Request) {
 	body := &refreshPayload{}
 	err = json.Unmarshal(b, body)
 	if err != nil {
-		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	tokens, err := rt.authenticator.Refresh(body.RefreshToken)
 	if err != nil {
-		rt.logger.Error("failed to refresh tokens", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to refresh tokens", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		if err == domain.ErrUnauthorized {
 			rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
@@ -128,6 +164,26 @@ func (rt *router) refresh(w http.ResponseWriter, r *http.Request) {
 		rt.respond(w, r, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	isSecure := r.Header.Get("X-Forwarded-Proto") == "https"
+	http.SetCookie(w, &http.Cookie{
+		Name:     "MRSAccessToken",
+		Value:    tokens.AccessToken,
+		HttpOnly: true,
+		Secure:   isSecure,
+		Path:     "/",
+		MaxAge:   int(tokens.AccessTokenExpiration),
+		SameSite: http.SameSiteLaxMode,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "MRSRefreshToken",
+		Value:    tokens.RefreshToken,
+		HttpOnly: true,
+		Secure:   isSecure,
+		Path:     "/",
+		MaxAge:   int(tokens.RefreshTokenExpiration),
+		SameSite: http.SameSiteLaxMode,
+	})
 
 	rt.respond(w, r, tokens, http.StatusOK)
 }
@@ -155,7 +211,7 @@ func (rt *router) logout(w http.ResponseWriter, r *http.Request) {
 	accessToken = strings.Replace(accessToken, "Bearer ", "", 1)
 	err := rt.authenticator.Revoke(accessToken)
 	if err != nil {
-		rt.logger.Error("failed to revoke access token", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to revoke access token", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		if err == domain.ErrUnauthorized {
 			rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
@@ -163,6 +219,15 @@ func (rt *router) logout(w http.ResponseWriter, r *http.Request) {
 		rt.respond(w, r, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:   "MRSAccessToken",
+		MaxAge: -1,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:   "MRSRefreshToken",
+		MaxAge: -1,
+	})
 
 	rt.respond(w, r, http.StatusText(http.StatusOK), http.StatusOK)
 }
@@ -184,7 +249,7 @@ func (rt *router) validateAccessToken(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -192,14 +257,14 @@ func (rt *router) validateAccessToken(w http.ResponseWriter, r *http.Request) {
 	body := &validationPayload{}
 	err = json.Unmarshal(b, body)
 	if err != nil {
-		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	claims, err := rt.authenticator.ValidateAccessToken(body.AccessToken)
 	if err != nil {
-		rt.logger.Debug("invalid access token", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Debug("invalid access token", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		if err == domain.ErrUnauthorized {
 			rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return

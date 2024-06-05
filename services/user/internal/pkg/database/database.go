@@ -47,6 +47,18 @@ func New(ctx context.Context, logger *log.Logger, uri, name, collection string, 
 	if err != nil {
 		return nil, err
 	}
+	// create unique compound index on the "id" and "password" fields
+	compoundIndex := mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "id", Value: 1},
+			{Key: "password", Value: 1},
+		},
+		Options: options.Index().SetUnique(true),
+	}
+	_, err = coll.Indexes().CreateOne(ctx, compoundIndex)
+	if err != nil {
+		return nil, err
+	}
 
 	return &database{
 		logger:     logger,
@@ -94,6 +106,25 @@ func (db *database) FindByID(ctx context.Context, id string) (*domain.User, erro
 	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, fmt.Errorf("user %s doesn't exist", id)
+		}
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+// FindByCredentials implements domain.Repository interface's FindByCredentials method.
+func (db *database) FindByCredentials(ctx context.Context, id, password string) (*domain.User, error) {
+	filter := bson.D{{Key: "id", Value: id}, {Key: "password", Value: password}}
+
+	var u domain.User
+
+	ctx, cancel := context.WithTimeout(ctx, db.timeout)
+	defer cancel()
+
+	if err := db.collection.FindOne(ctx, filter).Decode(&u); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.New("invalid credentials")
 		}
 		return nil, err
 	}

@@ -25,6 +25,10 @@ type Config struct {
 		Collection string        `mapstructure:"collection"`
 		Timeout    time.Duration `mapstructure:"timeout"`
 	} `mapstructure:"mongodb"`
+	AuthenticationService struct {
+		URL     string        `mapstructure:"url"`
+		Timeout time.Duration `mapstructure:"timeout"`
+	} `mapstructure:"authentication_service"`
 }
 
 // New returns a new instance of Config.

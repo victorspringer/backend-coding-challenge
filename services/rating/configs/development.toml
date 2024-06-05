@@ -12,3 +12,7 @@ uri = "mongodb://localhost:27018/ratingdb"
 db_name = "ratingdb"
 collection = "ratings"
 timeout = 4 # seconds
+
+[authentication_service]
+url = "http://localhost:8084"
+timeout = 4 # seconds

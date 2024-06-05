@@ -61,6 +61,12 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -90,7 +96,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/router.createPayload"
+                            "$ref": "#/definitions/router.upsertPayload"
                         }
                     }
                 ],
@@ -115,6 +121,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/router.response"
                         }
@@ -169,6 +181,12 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -203,7 +221,19 @@ const docTemplate = `{
                 }
             }
         },
-        "router.createPayload": {
+        "router.response": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "response": {},
+                "statusCode": {
+                    "type": "integer"
+                }
+            }
+        },
+        "router.upsertPayload": {
             "type": "object",
             "properties": {
                 "movieId": {
@@ -214,18 +244,6 @@ const docTemplate = `{
                 },
                 "value": {
                     "type": "number"
-                }
-            }
-        },
-        "router.response": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                },
-                "response": {},
-                "statusCode": {
-                    "type": "integer"
                 }
             }
         }

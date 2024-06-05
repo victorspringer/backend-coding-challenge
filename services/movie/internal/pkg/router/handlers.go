@@ -5,7 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
+	"github.com/victorspringer/backend-coding-challenge/lib/context"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
 	"github.com/victorspringer/backend-coding-challenge/services/movie/internal/pkg/domain"
 )
@@ -20,16 +21,23 @@ func (rt *router) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "ID of the movie"
 // @Produce json
 // @Success 200 {object} response{response=domain.Movie}
+// @Failure 401 {object} response
 // @Failure 404 {object} response
 // @Failure 500 {object} response
 // @Router /{id} [get]
 func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	if level := context.GetUserLevel(ctx); level == "anonymous" {
+		rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
 	id := chi.URLParam(r, "id")
 
 	m, err := rt.repository.FindByID(ctx, id)
 	if err != nil {
-		rt.logger.Error("movie not found", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("movie not found", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusNotFound)
 		return
 	}
@@ -45,16 +53,22 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 // @Param movie body createPayload true "Movie object to be created"
 // @Success 201 {object} response{response=domain.Movie}
 // @Failure 400 {object} response
+// @Failure 401 {object} response
 // @Failure 500 {object} response
 // @Router /create [post]
 func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	if level := context.GetUserLevel(ctx); level != "anonymous" {
+		rt.respond(w, r, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
 	defer r.Body.Close()
 
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
-		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to read request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -62,7 +76,7 @@ func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 	var p createPayload
 	err = json.Unmarshal(b, &p)
 	if err != nil {
-		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to parse request body", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -71,14 +85,14 @@ func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 
 	vm, err := domain.NewValidatedMovie(m)
 	if err != nil {
-		rt.logger.Error("invalid movie data", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("invalid movie data", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	m, err = rt.repository.Create(ctx, vm)
 	if err != nil {
-		rt.logger.Error("failed to create movie", log.Error(err), log.String("requestId", getRequestID(ctx)))
+		rt.logger.Error("failed to create movie", log.Error(err), log.String("requestId", context.GetRequestID(ctx)))
 		rt.respond(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}

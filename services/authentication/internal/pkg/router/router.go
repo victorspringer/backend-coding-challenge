@@ -1,11 +1,10 @@
 package router
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
@@ -43,12 +42,12 @@ func (rt *router) GetHandler() http.Handler {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Request-ID", "X-Forwarded-Proto"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
 
-	r.Use(rt.ContextMiddleware, middleware.Recoverer)
+	r.Use(middleware.StripSlashes, rt.ContextMiddleware, middleware.Recoverer)
 
 	//health check
 	r.Get("/", rt.healthCheckHandler)
@@ -69,12 +68,4 @@ func (rt *router) GetHandler() http.Handler {
 	r.Get("/.well-known/jwks.json", rt.jwks)
 
 	return r
-}
-
-func getRequestID(ctx context.Context) string {
-	requestID, ok := ctx.Value(ctxKeyRequestID).(string)
-	if !ok {
-		requestID = "unknown"
-	}
-	return requestID
 }

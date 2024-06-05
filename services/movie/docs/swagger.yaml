@@ -72,6 +72,10 @@ paths:
                 response:
                   $ref: '#/definitions/domain.Movie'
               type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/router.response'
         "404":
           description: Not Found
           schema:
@@ -108,6 +112,10 @@ paths:
               type: object
         "400":
           description: Bad Request
+          schema:
+            $ref: '#/definitions/router.response'
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/router.response'
         "500":

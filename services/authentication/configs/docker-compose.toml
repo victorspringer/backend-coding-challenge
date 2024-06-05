@@ -40,7 +40,7 @@ Lj7w826GApYiIZPthwIDAQAB
     idle_timeout = 5
 
 [user_service]
-endpoint = "http://localhost:8081"
+endpoint = "http://user:8081"
 timeout = 4 # seconds
 
 [redis]

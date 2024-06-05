@@ -58,7 +58,7 @@ func Init(ctx context.Context, cfg *config.Config, logger *log.Logger) error {
 
 	authClient := domain.NewClient(
 		logger,
-		domain.NewUserServiceClient(cfg.UserService.Timeout*time.Second, cfg.UserService.Endpoint),
+		domain.NewUserServiceClient(cfg.UserService.Timeout*time.Second, cfg.UserService.Endpoint, logger),
 		refreshTokenStorage,
 		accessTokenStorage,
 		flowRepository,

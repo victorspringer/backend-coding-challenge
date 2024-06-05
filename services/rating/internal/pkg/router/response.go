@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/victorspringer/backend-coding-challenge/lib/context"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
 )
 
@@ -32,7 +33,7 @@ func (rt *router) respond(w http.ResponseWriter, r *http.Request, body interface
 
 	b, err := json.Marshal(res)
 	if err != nil {
-		rt.logger.Error("failed to unmarshal response", log.Error(err), log.String("requestId", getRequestID(r.Context())))
+		rt.logger.Error("failed to unmarshal response", log.Error(err), log.String("requestId", context.GetRequestID(r.Context())))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

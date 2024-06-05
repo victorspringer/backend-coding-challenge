@@ -34,7 +34,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "User object to be created",
-                        "name": "username",
+                        "name": "user",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -63,6 +63,65 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/credentials": {
+            "post": {
+                "description": "Get user information by username and password",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get user by credentials (username and password)",
+                "operationId": "get-user-by-credentials",
+                "parameters": [
+                    {
+                        "description": "User object to be found",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/router.credentialsPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/router.response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "response": {
+                                            "$ref": "#/definitions/domain.User"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/router.response"
                         }
@@ -112,6 +171,12 @@ const docTemplate = `{
                             ]
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/router.response"
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
                         "schema": {
@@ -136,6 +201,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "type": "string"
+                },
+                "level": {
                     "type": "string"
                 },
                 "name": {
@@ -165,6 +233,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "picture": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "router.credentialsPayload": {
+            "type": "object",
+            "properties": {
+                "md5Password": {
                     "type": "string"
                 },
                 "username": {

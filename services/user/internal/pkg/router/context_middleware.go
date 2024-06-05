@@ -5,14 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
+	libCtx "github.com/victorspringer/backend-coding-challenge/lib/context"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
-)
-
-type contextKey string
-
-const (
-	ctxKeyRequestID contextKey = "requestID"
 )
 
 // ContextMiddleware adds data into the request's context (e.g. UUID).
@@ -20,7 +14,8 @@ func (rt *router) ContextMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := r.Header.Get("X-Request-ID")
 		if requestID == "" {
-			requestID = uuid.New().String()
+			requestID = libCtx.GetRequestID(r.Context())
+			r.Header.Set("X-Request-ID", requestID)
 		}
 		w.Header().Set("X-Request-ID", requestID)
 
@@ -34,7 +29,7 @@ func (rt *router) ContextMiddleware(next http.Handler) http.Handler {
 			)
 		}()
 
-		ctx := context.WithValue(r.Context(), ctxKeyRequestID, requestID)
+		ctx := context.WithValue(r.Context(), libCtx.CTX_REQUEST_ID, requestID)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

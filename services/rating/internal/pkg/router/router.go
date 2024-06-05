@@ -1,14 +1,14 @@
 package router
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/victorspringer/backend-coding-challenge/lib/log"
+	authClient "github.com/victorspringer/backend-coding-challenge/services/authentication/pkg/client"
 	_ "github.com/victorspringer/backend-coding-challenge/services/rating/docs"
 	"github.com/victorspringer/backend-coding-challenge/services/rating/internal/pkg/domain"
 )
@@ -29,11 +29,12 @@ type Router interface {
 type router struct {
 	repository domain.Repository
 	logger     *log.Logger
+	ac         *authClient.Client
 }
 
 // New returns a new instance of Router.
-func New(repo domain.Repository, logger *log.Logger) Router {
-	return &router{repo, logger}
+func New(repo domain.Repository, logger *log.Logger, ac *authClient.Client) Router {
+	return &router{repo, logger, ac}
 }
 
 // GetHandler returns the router's http handler.
@@ -43,12 +44,12 @@ func (rt *router) GetHandler() http.Handler {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Request-ID", "X-Forwarded-Proto"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
 
-	r.Use(rt.ContextMiddleware, middleware.Recoverer)
+	r.Use(middleware.StripSlashes, rt.ContextMiddleware, rt.ac.Middleware, middleware.Recoverer)
 
 	//health check
 	r.Get("/", rt.healthCheckHandler)
@@ -66,12 +67,4 @@ func (rt *router) GetHandler() http.Handler {
 	r.Post("/upsert", rt.upsertHandler)
 
 	return r
-}
-
-func getRequestID(ctx context.Context) string {
-	requestID, ok := ctx.Value(ctxKeyRequestID).(string)
-	if !ok {
-		requestID = "unknown"
-	}
-	return requestID
 }
