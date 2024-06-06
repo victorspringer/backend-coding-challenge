@@ -73,7 +73,6 @@ func (rt *router) GetHandler() http.Handler {
 		middleware.StripSlashes,
 		rt.ContextMiddleware,
 		rt.ac.Middleware,
-		rt.cacheMiddleware,
 		middleware.Recoverer,
 	)
 
@@ -87,9 +86,15 @@ func (rt *router) GetHandler() http.Handler {
 	r.Get("/docs/*", httpSwagger.Handler())
 
 	// endpoints
-	r.Get("/{username}", rt.findHandler)
 	r.Post("/create", rt.createHandler)
 	r.Post("/credentials", rt.findByCredentialsHandler)
+
+	// cacheable endpoints
+	r.Route("/", func(r chi.Router) {
+		r.Use(rt.cacheMiddleware)
+
+		r.Get("/{username}", rt.findHandler)
+	})
 
 	return r
 }
