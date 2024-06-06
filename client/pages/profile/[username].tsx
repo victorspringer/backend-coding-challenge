@@ -9,6 +9,8 @@ import Error from '../../src/components/Error';
 import CircularProgress from '@mui/material/CircularProgress';
 import cookie from 'cookie';
 import RefreshToken from '../../src/auth';
+import IsAuthenticated from '../../src/auth';
+import { GetCookie } from '../../src/cookies';
 
 type User = {
     id: string;
@@ -31,7 +33,6 @@ type Movie = {
 };
 
 type Props = {
-    accessToken: string;
     user?: User;
     ratings?: Rating[];
     error?: Error;
@@ -42,54 +43,19 @@ type Error = {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
-    const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : null;
-    const isAuthenticated = cookies && cookies["MRSAccessToken"];
-    let accessToken = "";
-
-    if (!isAuthenticated) {
-        if (cookies && cookies["MRSRefreshToken"]) {
-            let resp = await RefreshToken(cookies["MRSRefreshToken"]);
-            if (resp.statusCode !== 200) {
-                res.setHeader('Set-Cookie', cookie.serialize("MRSRefreshToken", '', {
-                    maxAge: -1,
-                    path: '/',
-                }));
-                return {
-                    redirect: {
-                        destination: '/signin',
-                        permanent: false,
-                    },
-                };
-            }
-            res.setHeader('Set-Cookie', [
-                cookie.serialize('MRSAccessToken', resp.response.accessToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    maxAge: resp.response.accessTokenExpiration,
-                    path: '/',
-                    sameSite: 'lax',
-                }),
-                cookie.serialize('MRSRefreshToken', resp.response.refreshToken, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    maxAge: resp.response.refreshTokenExpiration,
-                    path: '/',
-                    sameSite: 'lax',
-                }),
-            ]);
-            accessToken = resp.response.accessToken;
-        }
-    }
+    if (!IsAuthenticated(req, res)) return {
+        redirect: {
+            destination: '/signin',
+            permanent: false,
+        },
+    };
 
     const { username } = query;
-    if (cookies && cookies["MRSAccessToken"]) accessToken = cookies["MRSAccessToken"];
+    const accessToken = GetCookie(req, "MRSAccessToken");
+    const props: Props = {};
 
-    let props: Props = { accessToken };
 
-    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/user/${username}`, {
-        method: 'POST',
-        body: JSON.stringify({ accessToken }),
-    });
+    const userResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/user/${username}?accessToken=${accessToken}`);
     const userData = await userResponse.json();
 
     if (userData.error) {
@@ -100,23 +66,19 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
     props.user = userData.response;
 
-    const ratingsResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/rating/${username}`, {
-        method: 'POST',
-        body: JSON.stringify({ accessToken }),
-    });
+    const ratingsResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/rating/${username}?accessToken=${accessToken}`);
 
     const ratingsData = await ratingsResponse.json()
 
     if (ratingsData.error) {
+        console.log(ratingsData.error);
+        props.error = { code: ratingsData.statusCode }
         return { props }
     }
 
     const ratings = await Promise.all(
         ratingsData.response.map(async (rating: any) => {
-            const movieResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/movie/${rating.movieId}`, {
-                method: 'POST',
-                body: JSON.stringify({ accessToken }),
-            });
+            const movieResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/movie/${rating.movieId}?accessToken=${accessToken}`);
 
             const movieData = await movieResponse.json();
 
@@ -138,16 +100,15 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
     return { props };
 };
 
-const updateRating = async (accessToken: string, value: number, rating?: Rating) => {
+const updateRating = async (value: number, rating?: Rating) => {
     if (!rating) return;
 
-    const response = await fetch('/api/updateRating', {
+    const response = await fetch(`/api/updateRating?accessToken=${localStorage.getItem("accessToken")}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            accessToken: accessToken,
             userId: rating.user.id,
             movieId: rating.movie.id,
             value,
@@ -175,7 +136,7 @@ const labels: { [index: string]: string } = {
     5: 'Masterpiece',
 };
 
-export default function Profile({ accessToken, user, ratings, error }: Props) {
+export default function Profile({ user, ratings, error }: Props) {
     if (error) {
         return <Error code={error.code} />;
     }
@@ -198,7 +159,7 @@ export default function Profile({ accessToken, user, ratings, error }: Props) {
             const newValues = [...values];
             newValues[index] = newValue;
             setValues(newValues);
-            error = await updateRating(accessToken, newValue, ratings ? ratings[index] : undefined);
+            error = await updateRating(newValue, ratings ? ratings[index] : undefined);
         }
     };
 

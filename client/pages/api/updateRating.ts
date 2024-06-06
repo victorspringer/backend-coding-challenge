@@ -7,7 +7,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_RATING_SERVICE_URL}/upsert`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${req.body.accessToken}`,
+                'Authorization': `Bearer ${req.query.accessToken}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({

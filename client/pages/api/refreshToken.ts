@@ -1,6 +1,6 @@
-import cookie from 'cookie';
 import { NextApiRequest, NextApiResponse } from 'next';
 import fetch from 'isomorphic-fetch';
+import { SetCookie } from '../../src/cookies';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
@@ -14,21 +14,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const data = await response.json();
 
     if (data.statusCode === 200) {
-      res.setHeader('Set-Cookie', [
-        cookie.serialize('MRSAccessToken', data.response.accessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: data.response.accessTokenExpiration,
-          path: '/',
-          sameSite: 'lax',
-        }),
-        cookie.serialize('MRSRefreshToken', data.response.refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: data.response.refreshTokenExpiration,
-          path: '/',
-          sameSite: 'lax',
-        }),
+      SetCookie(res, [
+        { maxAge: data.response.accessTokenExpiration, key: "MRSAccessToken", value: data.response.accessToken },
+        { maxAge: data.response.refreshTokenExpiration, key: "MRSRefreshToken", value: data.response.refreshToken },
+        { maxAge: data.response.refreshTokenExpiration, key: "username", value: req.body.username },
       ]);
 
       return res.status(200).json(data);

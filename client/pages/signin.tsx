@@ -5,22 +5,17 @@ import theme from '../src/theme';
 import { md5 } from 'js-md5';
 import { GetServerSideProps } from 'next';
 import fetch from 'isomorphic-fetch';
-import cookie from 'cookie';
 import { useRouter } from 'next/router';
+import { GetCookie } from '../src/cookies';
+import IsAuthenticated from '../src/auth';
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
-    const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : null;
-    const isAuthenticated = cookies && cookies["MRSRefreshToken"];
-    
-    if (isAuthenticated) {
-        return {
-            redirect: {
-                destination: `/profile/victorspringer`,
-                permanent: false,
-            },
-        };
-    }
-
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+    if (await IsAuthenticated(req, res)) return {
+        redirect: {
+            destination: `/profile/${GetCookie(req, "username")}`,
+            permanent: false,
+        },
+    };
     return { props: {} };
 }
 
@@ -49,6 +44,12 @@ export default function SignIn() {
         const data = await response.json()
         if (data.statusCode == 200) {
             setError(false);
+
+            // sets data in localStorage for client-side access
+            localStorage.setItem("accessToken", data.response.accessToken);
+            localStorage.setItem("refreshToken", data.response.refreshToken);
+            localStorage.setItem("loggedInUser", username);
+
             router.push(`/profile/${username}`)
         } else {
             setError(true);

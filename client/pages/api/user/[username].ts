@@ -3,13 +3,10 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import fetch from 'isomorphic-fetch';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-    if (req.method === 'POST') {
-        const body = JSON.parse(req.body)
-
+    if (req.method === 'GET') {
         const response = await fetch(`${process.env.NEXT_PUBLIC_USER_SERVICE_URL}/${req.query.username}`, {
-            method: 'GET',
             headers: {
-                'Authorization': `Bearer ${body.accessToken}`,
+                "Authorization": `Bearer ${req.query.accessToken}`
             },
         });
         const data = await response.json();
@@ -20,6 +17,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             return res.status(data.statusCode).json(data);
         }
     } else {
+        res.setHeader('Allow', ['GET']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 };
