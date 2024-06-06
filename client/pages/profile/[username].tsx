@@ -8,6 +8,7 @@ import StarIcon from '@mui/icons-material/Star';
 import Error from '../../src/components/Error';
 import CircularProgress from '@mui/material/CircularProgress';
 import cookie from 'cookie';
+import RefreshToken from '../../src/auth';
 
 type User = {
     id: string;
@@ -43,24 +44,51 @@ type Error = {
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
     const cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : null;
     const isAuthenticated = cookies && cookies["MRSAccessToken"];
+    let accessToken = "";
 
     if (!isAuthenticated) {
-        return {
-            redirect: {
-                destination: '/signin',
-                permanent: false,
-            },
-        };
-    };
+        if (cookies && cookies["MRSRefreshToken"]) {
+            let resp = await RefreshToken(cookies["MRSRefreshToken"]);
+            if (resp.statusCode !== 200) {
+                res.setHeader('Set-Cookie', cookie.serialize("MRSRefreshToken", '', {
+                    maxAge: -1,
+                    path: '/',
+                }));
+                return {
+                    redirect: {
+                        destination: '/signin',
+                        permanent: false,
+                    },
+                };
+            }
+            res.setHeader('Set-Cookie', [
+                cookie.serialize('MRSAccessToken', resp.response.accessToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: resp.response.accessTokenExpiration,
+                    path: '/',
+                    sameSite: 'lax',
+                }),
+                cookie.serialize('MRSRefreshToken', resp.response.refreshToken, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: resp.response.refreshTokenExpiration,
+                    path: '/',
+                    sameSite: 'lax',
+                }),
+            ]);
+            accessToken = resp.response.accessToken;
+        }
+    }
 
     const { username } = query;
-    const accessToken = cookies["MRSAccessToken"];
-    
+    if (cookies && cookies["MRSAccessToken"]) accessToken = cookies["MRSAccessToken"];
+
     let props: Props = { accessToken };
 
     const userResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/user/${username}`, {
         method: 'POST',
-        body: JSON.stringify({accessToken}),
+        body: JSON.stringify({ accessToken }),
     });
     const userData = await userResponse.json();
 
@@ -74,9 +102,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
     const ratingsResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/rating/${username}`, {
         method: 'POST',
-        body: JSON.stringify({accessToken}),
+        body: JSON.stringify({ accessToken }),
     });
-    
+
     const ratingsData = await ratingsResponse.json()
 
     if (ratingsData.error) {
@@ -87,7 +115,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
         ratingsData.response.map(async (rating: any) => {
             const movieResponse = await fetch(`${process.env.NEXT_PUBLIC_WEBAPP_URL}/api/movie/${rating.movieId}`, {
                 method: 'POST',
-                body: JSON.stringify({accessToken}),
+                body: JSON.stringify({ accessToken }),
             });
 
             const movieData = await movieResponse.json();
