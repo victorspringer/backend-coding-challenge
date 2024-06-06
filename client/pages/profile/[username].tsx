@@ -41,7 +41,8 @@ type Error = {
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
-    if (!IsAuthenticated(req, res)) return {
+    const isAuthenticated = await IsAuthenticated(req, res);
+    if (!isAuthenticated) return {
         redirect: {
             destination: '/signin',
             permanent: false,

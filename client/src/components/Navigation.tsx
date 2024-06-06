@@ -18,23 +18,32 @@ import Logo from '../../public/svg/logo.svg';
 import Link from 'next/link';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import theme from '../theme';
+import fetch from 'isomorphic-fetch';
+import { useRouter } from 'next/router';
 
 export default function Navigation() {
   const [loggedInUser, setLoggedInUser] = React.useState<string|null>("");
+  const [accessToken, setAccessToken] = React.useState<string|null>("");
+  const router = useRouter();
+
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       setLoggedInUser(localStorage.getItem("loggedInUser"));
+      setAccessToken(localStorage.getItem("accessToken"));
     }
   }, []);
 
-  const pages = [
-    { 'title': 'Movies', 'path': '/movies' },
-    { 'title': 'Users', 'path': '/users' },
-  ];
-  const settings = [
-    { 'title': 'Profile', 'path': `/profile/${loggedInUser}` },
-    { 'title': 'Logout', 'path': '/logout' },
-  ];
+  const logout = async () => {
+    const response = fetch('/api/logout', {
+      method: 'POST',
+      body: JSON.stringify({accessToken}),
+    });
+    const resp = await response;
+    if (resp.ok) {
+      localStorage.clear();
+      router.push("/signin");
+    }
+  };
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -53,6 +62,15 @@ export default function Navigation() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const pages = [
+    { 'title': 'Movies', 'path': '/movies' },
+    { 'title': 'Users', 'path': '/users' },
+  ];
+  const settings = [
+    { 'title': 'Profile', 'path': `/profile/${loggedInUser}`, action: handleCloseUserMenu },
+    { 'title': 'Logout', 'path': undefined, 'action': () => logout() },
+  ];
 
   return (
     <AppBar position="static">
@@ -185,8 +203,8 @@ export default function Navigation() {
                 <MenuItem
                   key={setting.title}
                   component={Link}
-                  href={setting.path}
-                  onClick={handleCloseUserMenu}
+                  href={setting.path || "/"}
+                  onClick={setting.action}
                 >
                   <Typography textAlign="center">{setting.title}</Typography>
                 </MenuItem>

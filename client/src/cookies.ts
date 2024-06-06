@@ -27,15 +27,6 @@ export function SetCookie(res: ServerResponse<IncomingMessage>, props: cookiePro
   res.setHeader("Set-Cookie", cookies);
 }
 
-export function RemoveCookie(res: ServerResponse<IncomingMessage>, key: string): void {
-  const cookie = serialize(key, "", {
-    maxAge: -1,
-    path: "/",
-  });
-  
-  res.setHeader("Set-Cookie", cookie);
-}
-
 export function parseCookies(req: IncomingMessage & { cookies: Partial<{ [key: string]: string; }> }): { [key: string]: string } {
   // for API Routes we don't need to parse the cookies.
   if (req.cookies) return req.cookies as { [key: string]: string };

@@ -4,11 +4,12 @@ import { GetServerSideProps } from 'next';
 import IsAuthenticated from '../src/auth';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  if (!IsAuthenticated(req, res)) return {
-    redirect: {
-      destination: '/signin',
-      permanent: false,
-    },
+  const isAuthenticated = await IsAuthenticated(req, res);
+  if (!isAuthenticated) return {
+      redirect: {
+          destination: '/signin',
+          permanent: false,
+      },
   };
 
   return { props: {} }

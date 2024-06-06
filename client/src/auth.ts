@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { GetCookie, RemoveCookie, SetCookie } from "./cookies";
+import { GetCookie, SetCookie } from "./cookies";
 
 export default async function IsAuthenticated(req: IncomingMessage & { cookies: Partial<{ [key: string]: string; }> }, res: ServerResponse<IncomingMessage>): Promise<boolean> {
     if (GetCookie(req, "MRSAccessToken")) return true;
@@ -9,8 +9,10 @@ export default async function IsAuthenticated(req: IncomingMessage & { cookies: 
     if (refreshToken && username) {
         const resp = await refresh(refreshToken, username);
         if (resp.statusCode !== 200) {
-            RemoveCookie(res, "MRSRefreshToken");
-            RemoveCookie(res, "username");
+            SetCookie(res, [
+              { maxAge: -1, key: "MRSRefreshToken", value: "" },
+              { maxAge: -1, key: "username", value: "" },
+            ]);
             return false;
         }
 
