@@ -7,8 +7,6 @@ import theme from '../../src/theme';
 import StarIcon from '@mui/icons-material/Star';
 import Error from '../../src/components/Error';
 import CircularProgress from '@mui/material/CircularProgress';
-import cookie from 'cookie';
-import RefreshToken from '../../src/auth';
 import IsAuthenticated from '../../src/auth';
 import { GetCookie } from '../../src/cookies';
 

@@ -32,7 +32,7 @@ export function RemoveCookie(res: ServerResponse<IncomingMessage>, key: string):
     maxAge: -1,
     path: "/",
   });
-
+  
   res.setHeader("Set-Cookie", cookie);
 }
 
@@ -45,4 +45,3 @@ export function parseCookies(req: IncomingMessage & { cookies: Partial<{ [key: s
 
   return parse(cookie || "");
 }
-

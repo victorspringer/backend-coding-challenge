@@ -17,7 +17,7 @@ export default async function IsAuthenticated(req: IncomingMessage & { cookies: 
         SetCookie(res, [
             { maxAge: resp.response.accessTokenExpiration, key: "MRSAccessToken", value: resp.response.accessToken },
             { maxAge: resp.response.refreshTokenExpiration, key: "MRSRefreshToken", value: resp.response.refreshToken },
-            { maxAge: resp.response.refreshTokenExpiration, key: "username", value: "morisco" },
+            { maxAge: resp.response.refreshTokenExpiration, key: "username", value: username },
         ]);
 
         return true;
