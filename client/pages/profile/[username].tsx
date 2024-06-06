@@ -149,6 +149,13 @@ export default function Profile({ user, ratings, error }: Props) {
         );
     }
 
+    const [loggedInUser, setLoggedInUser] = React.useState<string|null>("");
+    React.useEffect(() => {
+      if (typeof window !== "undefined") {
+        setLoggedInUser(localStorage.getItem("loggedInUser"));
+      }
+    }, []);
+
     const firstName = user.name.split(" ")[0];
 
     const [values, setValues] = React.useState<number[]>(ratings?.map(rating => rating.value) || []);
@@ -233,6 +240,7 @@ export default function Profile({ user, ratings, error }: Props) {
                                                 {rating.movie.title}
                                             </Typography>
                                             <Rating
+                                                readOnly={user.username !== loggedInUser}
                                                 precision={0.5}
                                                 value={values[i]}
                                                 onChange={handleChange(i)}
