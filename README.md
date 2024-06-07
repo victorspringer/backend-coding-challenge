@@ -66,6 +66,6 @@ The dataset used in this task is provided by [TMDB](https://www.themoviedb.org/)
   - Update/delete/list User endpoints
   - Update/delete/list Movie endpoints
   - Monitoring/observability
-  - GraphQL / gRPC
+  - GraphQL or an API Gateway/Routing Service and communication through gRPC
   - Recommendation Service
   - Production-ready WebApp
