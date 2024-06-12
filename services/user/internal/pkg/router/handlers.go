@@ -44,6 +44,9 @@ func (rt *router) findHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// remove sensible data from response
+	u.Password = ""
+
 	rt.respond(w, r, u, http.StatusOK)
 }
 
@@ -93,6 +96,9 @@ func (rt *router) createHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// remove sensible data from response
+	u.Password = ""
+
 	rt.respond(w, r, u, http.StatusCreated)
 }
 
@@ -137,6 +143,9 @@ func (rt *router) findByCredentialsHandler(w http.ResponseWriter, r *http.Reques
 		rt.respond(w, r, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	// remove sensible data from response
+	u.Password = ""
 
 	rt.respond(w, r, u, http.StatusOK)
 }
