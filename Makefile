@@ -16,4 +16,4 @@ build-vendor:
 	cd ../movie && go mod vendor
 
 compose:
-	make build-vendor && docker-compose up
+	make build-vendor && docker-compose up --build
