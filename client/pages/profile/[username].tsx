@@ -71,7 +71,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
     if (ratingsData.error) {
         console.log(ratingsData.error);
-        props.error = { code: ratingsData.statusCode }
+
+        if (ratingsData.statusCode !== 404) {
+            props.error = { code: ratingsData.statusCode }
+        }
+
         return { props }
     }
 
@@ -148,11 +152,11 @@ export default function Profile({ user, ratings, error }: Props) {
         );
     }
 
-    const [loggedInUser, setLoggedInUser] = React.useState<string|null>("");
+    const [loggedInUser, setLoggedInUser] = React.useState<string | null>("");
     React.useEffect(() => {
-      if (typeof window !== "undefined") {
-        setLoggedInUser(localStorage.getItem("loggedInUser"));
-      }
+        if (typeof window !== "undefined") {
+            setLoggedInUser(localStorage.getItem("loggedInUser"));
+        }
     }, []);
 
     const firstName = user.name.split(" ")[0];
