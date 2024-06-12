@@ -75,7 +75,7 @@ export default function Navigation() {
   ];
   const settings = [
     { 'title': 'Profile', 'path': `/profile/${loggedInUser}`, action: handleCloseUserMenu },
-    { 'title': 'Logout', 'path': undefined, 'action': () => logout() },
+    { 'title': 'Logout', 'path': '/signin', 'action': () => logout() },
   ];
 
   return (
