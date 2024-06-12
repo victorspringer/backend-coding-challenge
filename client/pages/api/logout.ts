@@ -14,12 +14,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
     const data = await response.json();
 
+    SetCookie(res, [
+      { maxAge: -1, key: "MRSAccessToken", value: "" },
+      { maxAge: -1, key: "MRSRefreshToken", value: "" },
+      { maxAge: -1, key: "username", value: "" },
+    ]);
+    
     if (data.statusCode === 200) {
-      SetCookie(res, [
-        { maxAge: -1, key: "MRSAccessToken", value: "" },
-        { maxAge: -1, key: "MRSRefreshToken", value: "" },
-        { maxAge: -1, key: "username", value: "" },
-      ]);
       return res.status(200).json(data);
     } else {
       return res.status(data.statusCode).json(data);

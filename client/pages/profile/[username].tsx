@@ -10,12 +10,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IsAuthenticated from '../../src/auth';
 import { GetCookie } from '../../src/cookies';
 
-type User = {
+export type User = {
     id: string;
     name: string;
     username: string;
-    md5Password: string;
     picture: string;
+    level: string;
 };
 
 type Rating = {

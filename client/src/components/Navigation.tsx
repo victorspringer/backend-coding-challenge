@@ -20,29 +20,35 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import theme from '../theme';
 import fetch from 'isomorphic-fetch';
 import { useRouter } from 'next/router';
+import { User } from '../../pages/profile/[username]';
 
 export default function Navigation() {
   const [loggedInUser, setLoggedInUser] = React.useState<string|null>("");
   const [accessToken, setAccessToken] = React.useState<string|null>("");
+  const [user, setUser] = React.useState<User>();
   const router = useRouter();
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       setLoggedInUser(localStorage.getItem("loggedInUser"));
       setAccessToken(localStorage.getItem("accessToken"));
+      if (accessToken !== "") {
+        fetch(`/api/user/${loggedInUser}?accessToken=${accessToken}`)
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.statusCode === 200) setUser(data.response);
+          });
+      }
     }
-  }, []);
+  }, [accessToken]);
 
   const logout = async () => {
-    const response = fetch('/api/logout', {
+    await fetch('/api/logout', {
       method: 'POST',
       body: JSON.stringify({accessToken}),
     });
-    const resp = await response;
-    if (resp.ok) {
-      localStorage.clear();
-      router.push("/signin");
-    }
+    localStorage.clear();
+    router.push("/signin");
   };
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -172,13 +178,12 @@ export default function Navigation() {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
-                  alt="Admin"
-                  //src={ props.user.picture }
+                  alt={ user?.level }
+                  src={ user?.picture }
                   sx={{ bgcolor: theme.palette.secondary.light }}
                 >
                   {
-                    // TODO: check if is admin to plot the fallback icon
-                    true && <AdminPanelSettingsIcon />
+                    user?.level === "admin" && <AdminPanelSettingsIcon />
                   }
                 </Avatar>
               </IconButton>
