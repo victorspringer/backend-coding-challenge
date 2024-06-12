@@ -70,7 +70,6 @@ func (rt *router) GetHandler() http.Handler {
 	}))
 
 	r.Use(
-		middleware.StripSlashes,
 		rt.ContextMiddleware,
 		rt.ac.Middleware,
 		middleware.Recoverer,

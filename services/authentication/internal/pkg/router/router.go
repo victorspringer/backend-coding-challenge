@@ -47,7 +47,7 @@ func (rt *router) GetHandler() http.Handler {
 		MaxAge:           300,
 	}))
 
-	r.Use(middleware.StripSlashes, rt.ContextMiddleware, middleware.Recoverer)
+	r.Use(rt.ContextMiddleware, middleware.Recoverer)
 
 	//health check
 	r.Get("/", rt.healthCheckHandler)
